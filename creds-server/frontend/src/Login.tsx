@@ -1,33 +1,34 @@
-import { useContext, useEffect, useState } from "react";
-import { jwtDecode } from 'jwt-decode';
-import { AuthContext } from './AuthContext';
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
-import TextField from '@mui/material/TextField';
+import TextField from "@mui/material/TextField";
+import IconButton from "@mui/material/IconButton";
+import InputAdornment from "@mui/material/InputAdornment";
 
-import './login.css';
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
-type JWTPayload = {
-    role: string,
-    user: string,
-};
+import "./login.css";
 
 export function Login() {
     const [accountUuid, setAccountUuid] = useState("");
     const [login, setLogin] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+
     const navigate = useNavigate();
 
     useEffect(() => {
         if (login) {
             fetch(`/api/authenticate?account_uuid=${accountUuid}`)
                 .then(res => {
-                    if (res.status == 200) {
-                        navigate("/")
+                    if (res.status === 200) {
+                        navigate("/");
                     } else {
                         setAccountUuid("");
                     }
                 });
-            setLogin(false)
+
+            setLogin(false);
         }
     }, [login]);
 
@@ -45,16 +46,36 @@ export function Login() {
         <div className="login-page">
             <div className="login-container">
                 <h1>INFOMCEC</h1>
+
                 <div className="login-control">
-                <TextField 
-                    id="outlined-basic" 
-                    label="account uuid"
-                    type="password"
-                    variant="outlined" 
-                    onChange={handleInputChange}
-                    onKeyDown={handleKeyDown}
-                />
-                <button className='login-button' onClick={(_) => setLogin(true)}>login</button>
+                    <TextField
+                        id="account-uuid"
+                        label="uuid"
+                        type={showPassword ? "text" : "password"}
+                        variant="outlined"
+                        value={accountUuid}
+                        onChange={handleInputChange}
+                        onKeyDown={handleKeyDown}
+                        slotProps={{
+                            input: {
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            edge="end"
+                                        >
+                                            {showPassword
+                                                ? <VisibilityOff />
+                                                : <Visibility />
+                                            }
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            },
+                        }}
+                    />
+
+                    <button className='login-button' onClick={(_) => setLogin(true)}>login</button>
                 </div>
             </div>
         </div>

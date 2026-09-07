@@ -69,12 +69,7 @@ body {
 }
 
 input {
-    border-radius: var(--border-radius);
     background-color: transparent;
-    border-color: var(--neutral-1);
-    border-width: 0px;
-    padding: 0.5em;
-    box-shadow: inset 0 1px 2px hsla(0, 0%, 0%, 0.1);
 }
 input:focus {
     outline: none;
