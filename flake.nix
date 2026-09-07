@@ -10,6 +10,7 @@
     let
         system = "x86_64-linux";
         pkgs = nixpkgs.legacyPackages.${system};
+        frontend = pkgs.callPackage ./creds-server/frontend {};
     in
     {
 
@@ -54,23 +55,7 @@
             {
                 default = self.packages.${system}.backend;
                 backend = crate.rootCrate.build;
-                frontend = pkgs.buildNpmPackage {
-                    name = "creds-server-frontend";
-                    nativeBuildInputs = with pkgs; [
-                        nodejs
-                        yarn
-                        zip
-                    ];
-                    src = ./creds-server/frontend;
-                    npmDepsHash = "sha256-JuvAU7WgQSTIM7bzZF9yEYEbNnoWn4x90p/2nitfWSY=";
-                    buildPhase = ''
-                    npm run build
-                    zip -r dist.zip dist
-                    '';
-                    installPhase = ''
-                    mv dist.zip $out
-                    '';
-                };
+                frontend = frontend.package;
             };
         images.${system} =
             {
@@ -85,6 +70,7 @@
                         Entrypoint = [ "/bin/backend" ];
                     };
                 };
+                frontend = frontend.image;
             };
     };
 }

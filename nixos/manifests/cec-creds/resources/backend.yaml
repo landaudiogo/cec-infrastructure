@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cec-creds-backend
+spec:
+  containers:
+  - name: cec-creds-backend
+    image: dclandau/cec-creds-backend:latest@sha256:dd58bc1234cd93e5d135367f1d1f82f100a6c305762b5baaf72abe82c498cecf

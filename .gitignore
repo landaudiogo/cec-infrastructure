@@ -1,6 +1,7 @@
 ca/
 creds/
 .direnv/
+credentials/
 result
 client_credentials.json
 group_credentials.json
