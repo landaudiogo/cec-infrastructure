@@ -1,5 +1,6 @@
 use indoc::{formatdoc, indoc};
 use anyhow::Result;
+use uuid::Uuid;
 use jwt::Claims;
 use r2d2::Pool;
 use r2d2_sqlite::{rusqlite::params, SqliteConnectionManager};
@@ -28,32 +29,61 @@ struct CreateUser {
 
 #[derive(Serialize, Debug)]
 struct User {
+    account_uuid: String,
     email: String,
     client: u64,
     group: Option<u64>,
     role: String,
 }
 
-#[derive(Deserialize)]
-struct Token {
-    token: String,
+#[derive(Deserialize, Debug)]
+struct AccountUuid {
+    account_uuid: String,
 }
 
 
-async fn authenticate(jar: CookieJar, query: Query<Token>) -> Result<(CookieJar, StatusCode), StatusCode> {
-    match jwt::decode(&query.token) {
-        Ok(_) => {
+async fn authenticate(
+    State(pool): State<Pool<SqliteConnectionManager>>,
+    jar: CookieJar,
+    query: Query<AccountUuid>,
+) -> Result<(CookieJar, StatusCode), StatusCode> {
+    let conn = pool.get().unwrap();
+
+    let user = conn
+        .prepare(
+            "
+            SELECT account_uuid, email, client_id, group_id, role
+            FROM user
+            WHERE account_uuid = ?;
+            ",
+        )
+        .unwrap()
+        .query_row(params![query.account_uuid], |row| {
+            Ok(User {
+                account_uuid: row.get(0).unwrap(),
+                email: row.get(1).unwrap(),
+                client: row.get(2).unwrap(),
+                group: row.get(3).unwrap(),
+                role: row.get(4).unwrap(),
+            })
+        });
+
+    match user {
+        Ok(User { email, role, .. }) => {
+            let claims = Claims::new(email, role);
+            let token = jwt::encode(&claims)
+                .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
             Ok((
                 jar.add(
-                    Cookie::build(("token", query.token.clone()))
-                        .http_only(true)
-                )
-                ,
+                    Cookie::build(("token", token))
+                        .http_only(true),
+                ),
                 StatusCode::OK,
             ))
-        },
+        }
         Err(_) => {
-            info!("invalid token `{}`", query.token);
+            info!("invalid uuid `{}`", query.account_uuid);
             Err(StatusCode::UNAUTHORIZED)
         }
     }
@@ -82,7 +112,7 @@ async fn get_users(
     let conn = pool.get().unwrap(); 
     let mut query = conn
         .prepare("
-            SELECT email, client_id, group_id, role FROM user;
+            SELECT email, client_id, group_id, role, account_uuid FROM user;
         ")
         .unwrap();
     let users: Vec<User> = query.query_map([], |row| {
@@ -91,6 +121,7 @@ async fn get_users(
                 client: row.get::<usize, u64>(1).unwrap(),
                 group: row.get::<usize, Option<u64>>(2).unwrap(),
                 role: row.get::<usize, String>(3).unwrap(),
+                account_uuid: row.get::<usize, String>(4).unwrap(),
             })
         })
         .unwrap()
@@ -117,7 +148,7 @@ async fn get_user(
     let conn = pool.get().unwrap(); 
     let user = conn
         .prepare("
-            SELECT email, client_id, group_id, role FROM user WHERE email = ?;
+            SELECT email, client_id, group_id, role, account_uuid FROM user WHERE email = ?;
         ").unwrap()
         .query_row(params![email], |row| {
             Ok(User {
@@ -125,6 +156,7 @@ async fn get_user(
                 client: row.get::<usize, u64>(1).unwrap(),
                 group: row.get::<usize, Option<u64>>(2).unwrap(),
                 role: row.get::<usize, String>(3).unwrap(),
+                account_uuid: row.get::<usize, String>(4).unwrap(),
             })
         }).expect(&format!("User `{}` missing from db", email));
 
@@ -150,7 +182,7 @@ async fn get_files(
     let conn = pool.get().unwrap(); 
     let user = conn
         .prepare("
-            SELECT email, client_id, group_id, role FROM user WHERE email = ?;
+            SELECT email, client_id, group_id, role, account_uuid FROM user WHERE email = ?;
         ").unwrap()
         .query_row(params![email], |row| {
             Ok(User {
@@ -158,6 +190,7 @@ async fn get_files(
                 client: row.get::<usize, u64>(1).unwrap(),
                 group: row.get::<usize, Option<u64>>(2).unwrap(),
                 role: row.get::<usize, String>(3).unwrap(),
+                account_uuid: row.get::<usize, String>(4).unwrap(),
             })
         }).expect(&format!("User `{}` missing from db", email));
 
@@ -179,8 +212,12 @@ async fn get_files(
     };
     let group = format!("group{}", group);
     let group_dir = Path::new(&credentials_dir).join("groups").join(&group);
+    let Ok(dir_entries) = fs::read_dir(group_dir) else { 
+        return Ok((StatusCode::OK, Json(Value::Object(body)))); 
+    };
     let mut group_files = Vec::new();
-    for entry in fs::read_dir(group_dir).unwrap().into_iter().map(|entry| entry.unwrap()) {
+    for entry in dir_entries {
+        let Ok(entry) = entry else { continue; };
         let path = entry.path();
         let file_name = path.file_name().unwrap().to_str().unwrap();
         group_files.push(file_name.into());
@@ -211,55 +248,6 @@ async fn sendgrid_email(to_email: &str, token: &str) -> Result<()> {
     sender.send(&m).await?;
     
     Ok(())
-}
-
-#[debug_handler]
-async fn send_email(
-    State(pool): State<Pool<SqliteConnectionManager>>,
-    jar: CookieJar,
-    params: RawPathParams,
-) -> Result<StatusCode, StatusCode> {
-    let token = jar.get("token").ok_or(StatusCode::UNAUTHORIZED)?;
-    match jwt::decode(token.value()) {
-        Ok(token_data) => {
-            let role = token_data.claims.role;
-            if role != "admin" {
-                info!("Attempting to create user with role {role}");
-                return Err(StatusCode::UNAUTHORIZED);
-            }
-        }, 
-        Err(_) => {
-            return Err(StatusCode::FORBIDDEN);
-        }
-    };
-
-    let user_email = match params.iter().filter(|(key, _)| *key == "email").map(|(_, v)| v).next() {
-        Some(email) => email,
-        None => return Err(StatusCode::NOT_FOUND)
-    };
-    let conn = pool.get().unwrap(); 
-    let user = conn
-        .prepare("
-            SELECT email, client_id, group_id, role FROM user WHERE email = ?;
-        ").unwrap()
-        .query_row(params![user_email], |row| {
-            Ok(User {
-                email: row.get::<usize, String>(0).unwrap(),
-                client: row.get::<usize, u64>(1).unwrap(),
-                group: row.get::<usize, Option<u64>>(2).unwrap(),
-                role: row.get::<usize, String>(3).unwrap(),
-            })
-        }).expect(&format!("User `{}` missing from db", user_email));
-    
-    let claims = Claims::new(user.email.clone(), user.role);
-    let student_token = jwt::encode(&claims).unwrap();
-
-    if let Err(err) = sendgrid_email(&user.email, &student_token).await {
-        eprintln!("Sendgrid error: {:?}", err);
-        return Err(StatusCode::INTERNAL_SERVER_ERROR);
-    }
-    
-    Ok(StatusCode::OK)
 }
 
 #[derive(Deserialize)]
@@ -326,17 +314,18 @@ async fn create_user(
     let conn = pool.get().unwrap(); 
     let user = conn
         .prepare("
-            INSERT INTO user(client_id, email, role) 
-            SELECT MAX(client_id) + 1, ?, ?
+            INSERT INTO user(client_id, email, role, account_uuid) 
+            SELECT MAX(client_id) + 1, ?, ?, ?
             FROM user
-            RETURNING email, client_id, group_id, role
+            RETURNING email, client_id, group_id, role, account_uuid
         ").unwrap()
-        .query_row(params![email, "student"], |row| {
+        .query_row(params![email, "student", Uuid::new_v4().to_string()], |row| {
             Ok(User {
                 email: row.get::<usize, String>(0).unwrap(),
                 client: row.get::<usize, u64>(1).unwrap(),
                 group: row.get::<usize, Option<u64>>(2).unwrap(),
                 role: row.get::<usize, String>(3).unwrap(),
+                account_uuid: row.get::<usize, String>(4).unwrap(),
             })
         })
         .map_err(|e| StatusCode::FORBIDDEN)?;
@@ -367,7 +356,7 @@ async fn download_file(
     let conn = pool.get().unwrap(); 
     let user = conn
         .prepare("
-            SELECT email, client_id, group_id, role FROM user WHERE email = ?;
+            SELECT email, client_id, group_id, role, account_uuid FROM user WHERE email = ?;
         ").unwrap()
         .query_row(params![email], |row| {
             Ok(User {
@@ -375,6 +364,7 @@ async fn download_file(
                 client: row.get::<usize, u64>(1).unwrap(),
                 group: row.get::<usize, Option<u64>>(2).unwrap(),
                 role: row.get::<usize, String>(3).unwrap(),
+                account_uuid: row.get::<usize, String>(4).unwrap(),
             })
         }).expect(&format!("User `{}` missing from db", email));
 
@@ -441,14 +431,13 @@ async fn main() -> Result<()> {
     fs::create_dir_all(db.parent().unwrap());
     let manager = SqliteConnectionManager::file(db);
     let pool = r2d2::Pool::new(manager).unwrap();
-    sql::init_sql(pool.clone())?;
-    send_admin_token().await?;
+    sql::init_sql(pool.clone(), &env::var("ADMIN_UUID").expect("ADMIN_UUID unset"))?;
+    // send_admin_token().await?;
 
     let app = Router::new()
         .route("/api/users", post(create_user))
         .route("/api/users", get(get_users))
         .route("/api/user", get(get_user))
-        .route("/api/user/{email}/send_email", post(send_email))
         .route("/api/user", patch(patch_user))
         .route("/api/authenticate", get(authenticate))
         .route("/api/files", get(get_files))

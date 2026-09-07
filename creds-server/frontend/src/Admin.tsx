@@ -16,6 +16,7 @@ type User = {
     role: string,
     client: number,
     group: number,
+    account_uuid: string,
 }
 
 type UserListProps = {
@@ -118,6 +119,7 @@ export default function UserList(props: UserListProps) {
             <Table sx={{ minWidth: "500px" }} aria-label="simple table">
                 <TableHead>
                     <TableRow>
+                        <TableCell align="center">UUID</TableCell>
                         <TableCell align="center">Email</TableCell>
                         <TableCell align="center">Role</TableCell>
                         <TableCell align="center">Client</TableCell>
@@ -130,6 +132,7 @@ export default function UserList(props: UserListProps) {
                         <TableRow
                         key={user.email}
                         >
+                            <TableCell align="left">{user.account_uuid}</TableCell>
                             <TableCell align="left">{user.email}</TableCell>
                             <TableCell align="left">{user.role}</TableCell>
                             <TableCell align="right">{user.client}</TableCell>

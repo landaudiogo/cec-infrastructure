@@ -13,21 +13,18 @@ type JWTPayload = {
 };
 
 export function Login() {
-    const [token, setToken] = useState("");
+    const [accountUuid, setAccountUuid] = useState("");
     const [login, setLogin] = useState(false);
-    const { setUser } = useContext(AuthContext);
     const navigate = useNavigate();
 
     useEffect(() => {
         if (login) {
-            fetch(`/api/authenticate?token=${token}`)
+            fetch(`/api/authenticate?account_uuid=${accountUuid}`)
                 .then(res => {
                     if (res.status == 200) {
-                        const payload = jwtDecode<JWTPayload>(token);
-                        setUser({email: payload.user, role: payload.role});
                         navigate("/")
                     } else {
-                        setToken("");
+                        setAccountUuid("");
                     }
                 });
             setLogin(false)
@@ -35,7 +32,7 @@ export function Login() {
     }, [login]);
 
     function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-        setToken(e.target.value);
+        setAccountUuid(e.target.value);
     }
 
     function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -51,7 +48,7 @@ export function Login() {
                 <div className="login-control">
                 <TextField 
                     id="outlined-basic" 
-                    label="token" 
+                    label="account uuid"
                     type="password"
                     variant="outlined" 
                     onChange={handleInputChange}
