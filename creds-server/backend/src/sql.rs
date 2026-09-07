@@ -7,7 +7,7 @@ pub fn init_sql(pool: Pool<SqliteConnectionManager>, admin_uuid: &str) -> Result
         .execute_batch(&format!("
             CREATE TABLE IF NOT EXISTS user (
                 client_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                email TEXT UNIQUE NOT NULL,
+                email TEXT UNIQUE,
                 group_id INTEGER,
                 account_uuid TEXT UNIQUE NOT NULL,
                 role TEXT NOT NULL

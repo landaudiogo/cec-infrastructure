@@ -6,7 +6,6 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
-import SendIcon from '@mui/icons-material/Send';
 import CheckIcon from '@mui/icons-material/Check';
 
 import './admin.css';
@@ -28,25 +27,8 @@ type UserListProps = {
 
 export default function UserList(props: UserListProps) {
     const { users, setUsers } = props;
-    const [toEmail, setToEmail] = useState<undefined | string>(undefined);
     const [editing, setEditing] = useState<{[key: string]: string}>({});
-    const [patchUser, setPatchUser] = useState<{email: string, group: number} | undefined>(undefined)
-
-    useEffect(() => {
-        if (!toEmail) 
-            return;
-        fetch(`/api/user/${toEmail}/send_email`, { method: "POST" })
-            .then((res) => {
-                if (!res.ok) {
-                    throw new Error(`Request status not OK: ${res.status}`);
-                }
-                setToEmail(undefined);
-                console.log(`emailed ${toEmail}`);
-            })
-            .catch((e) => {
-                console.log(e)
-            })
-    }, [toEmail]);
+    const [patchUser, setPatchUser] = useState<{account_uuid: string, group: number} | undefined>(undefined)
 
     useEffect(() => {
         if (!patchUser) 
@@ -59,12 +41,12 @@ export default function UserList(props: UserListProps) {
                 setPatchUser(undefined);
                 setUsers((users) => {
                     let res = {...users};
-                    res[patchUser.email] = {...users[patchUser.email], group: patchUser.group};
+                    res[patchUser.account_uuid] = {...users[patchUser.account_uuid], group: patchUser.group};
                     return res;
                 });
                 setEditing((editing) => {
                     let res = {...editing};
-                    delete res[patchUser.email];
+                    delete res[patchUser.account_uuid];
                     return res;
                 });
                 setPatchUser(undefined);
@@ -74,34 +56,28 @@ export default function UserList(props: UserListProps) {
             })
     }, [patchUser]);
 
-    function sendEmail(email: string) {
-        return () => {
-            setToEmail(email);
-        };
-    }
-
-    function editGroup(email: string) {
+    function editGroup(account_uuid: string) {
         return () => {
             setEditing((editing) => {
                 let res = {...editing} 
-                res[email] = "";
+                res[account_uuid] = "";
                 return res;
             })
         };
     }
 
-    function confirmEditing(email: string) {
+    function confirmEditing(account_uuid: string) {
         return () => {
-            setPatchUser({email, group: Number(editing[email])});
+            setPatchUser({account_uuid, group: Number(editing[account_uuid])});
         };
     }
 
-    function handleGroupValue(email: string) {
+    function handleGroupValue(account_uuid: string) {
         return (e: React.ChangeEvent<HTMLInputElement>) => {
             setEditing((editing) => {
                 let res = {...editing};
                 if (e.target.value.length <= 2) {
-                    res[email] = e.target.value;
+                    res[account_uuid] = e.target.value;
                 }
                 return res;
             });
@@ -130,31 +106,29 @@ export default function UserList(props: UserListProps) {
                 <TableBody>
                     {Object.values(users).sort((a,b) => a.client > b.client ? 1 : -1).map((user) => (
                         <TableRow
-                        key={user.email}
+                        key={user.account_uuid}
                         >
                             <TableCell align="left">{user.account_uuid}</TableCell>
                             <TableCell align="left">{user.email}</TableCell>
                             <TableCell align="left">{user.role}</TableCell>
                             <TableCell align="right">{user.client}</TableCell>
-                            {user.email in editing ?
-                                <TableCell align="right" onClick={editGroup(user.email)}>
+                            {user.account_uuid in editing ?
+                                <TableCell align="right" onClick={editGroup(user.account_uuid)}>
                                     <input 
                                         autoFocus 
                                         onKeyDown={validateNumber} 
-                                        onChange={handleGroupValue(user.email)} 
-                                        value={editing[user.email]}
+                                        onChange={handleGroupValue(user.account_uuid)} 
+                                        value={editing[user.account_uuid]}
                                         className="group-input"
                                     />
                                 </TableCell>:
-                                <TableCell align="right" onClick={editGroup(user.email)}>{user.group != null ? user.group : "-"}</TableCell>
+                                <TableCell align="right" onClick={editGroup(user.account_uuid)}>{user.group != null ? user.group : "-"}</TableCell>
                             }
-                            {user.email in editing ?
+                            {user.account_uuid in editing ?
                                 <TableCell align="center">
-                                    <button className="confirm-button" onClick={confirmEditing(user.email)}><CheckIcon/></button>
+                                    <button className="confirm-button" onClick={confirmEditing(user.account_uuid)}><CheckIcon/></button>
                                 </TableCell>:
-                                <TableCell align="center">
-                                    <button className="send-button" onClick={sendEmail(user.email)}><SendIcon/></button>
-                                </TableCell>
+                                <></>
                             }
                         </TableRow>
                     ))}
@@ -169,7 +143,7 @@ type AddUserProps = {
 };
 
 function AddUser(props: AddUserProps) {
-    const [email, setEmail] = useState("");
+    const [email, setEmail] = useState<null | string>(null);
     const [add, setAdd] = useState(false)
     const { setUsers } = props;
 
@@ -192,7 +166,7 @@ function AddUser(props: AddUserProps) {
             .then((body) => {
                 setUsers((_users) => {
                     let res: {[key: string]: User} = {..._users};
-                    res[body.email] = body;
+                    res[body.account_uuid] = body;
                     return res;
                 });
             })
@@ -201,7 +175,7 @@ function AddUser(props: AddUserProps) {
             })
 
         setAdd(false);
-        setEmail("");
+        setEmail(null);
     }, [add])
 
     function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -220,7 +194,7 @@ function AddUser(props: AddUserProps) {
                 id="outlined-basic" 
                 label="email" 
                 variant="outlined" 
-                value={email}
+                value={email ? email : ""}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
             />
@@ -245,7 +219,7 @@ export function Admin() {
                 let res: {[key: string]: User} = {}
                 for (const elem of body) {
                     let user = elem as User;
-                    res[user.email] = user;
+                    res[user.account_uuid] = user;
                 }
                 setUsers(res);
             })

@@ -24,13 +24,13 @@ mod sql;
 
 #[derive(Deserialize)]
 struct CreateUser {
-    email: String,
+    email: Option<String>,
 }
 
 #[derive(Serialize, Debug)]
 struct User {
     account_uuid: String,
-    email: String,
+    email: Option<String>,
     client: u64,
     group: Option<u64>,
     role: String,
@@ -49,28 +49,25 @@ async fn authenticate(
 ) -> Result<(CookieJar, StatusCode), StatusCode> {
     let conn = pool.get().unwrap();
 
-    let user = conn
+    let res = conn
         .prepare(
             "
-            SELECT account_uuid, email, client_id, group_id, role
+            SELECT account_uuid, role
             FROM user
             WHERE account_uuid = ?;
             ",
         )
         .unwrap()
         .query_row(params![query.account_uuid], |row| {
-            Ok(User {
-                account_uuid: row.get(0).unwrap(),
-                email: row.get(1).unwrap(),
-                client: row.get(2).unwrap(),
-                group: row.get(3).unwrap(),
-                role: row.get(4).unwrap(),
-            })
+            Ok((
+                row.get(0).unwrap(),
+                row.get(1).unwrap(),
+            ))
         });
 
-    match user {
-        Ok(User { email, role, .. }) => {
-            let claims = Claims::new(email, role);
+    match res {
+        Ok((account_uuid, role)) => {
+            let claims = Claims::new(account_uuid, role);
             let token = jwt::encode(&claims)
                 .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
@@ -96,18 +93,18 @@ async fn get_users(
     jar: CookieJar,
 ) -> Result<(StatusCode, Json<Users>), StatusCode> {
     let token = jar.get("token").ok_or(StatusCode::NOT_FOUND)?;
-    let email = match jwt::decode(token.value()) {
+    match jwt::decode(token.value()) {
         Ok(token_data) => {
             let role = token_data.claims.role;
             if role != "admin" {
-                info!("Attempting to create user with role {role}");
+                info!("Attempting to get users with role {role}");
                 return Err(StatusCode::UNAUTHORIZED);
             }
         }, 
         Err(_) => {
             return Err(StatusCode::FORBIDDEN);
         }
-    };
+    }
 
     let conn = pool.get().unwrap(); 
     let mut query = conn
@@ -117,7 +114,7 @@ async fn get_users(
         .unwrap();
     let users: Vec<User> = query.query_map([], |row| {
             Ok(User {
-                email: row.get::<usize, String>(0).unwrap(),
+                email: row.get(0).unwrap(),
                 client: row.get::<usize, u64>(1).unwrap(),
                 group: row.get::<usize, Option<u64>>(2).unwrap(),
                 role: row.get::<usize, String>(3).unwrap(),
@@ -136,9 +133,9 @@ async fn get_user(
     jar: CookieJar,
 ) -> Result<(StatusCode, Json<User>), StatusCode> {
     let token = jar.get("token").ok_or(StatusCode::NOT_FOUND)?;
-    let email = match jwt::decode(token.value()) {
+    let account_uuid = match jwt::decode(token.value()) {
         Ok(token_data) => {
-            token_data.claims.user
+            token_data.claims.account_uuid
         }, 
         Err(_) => {
             return Err(StatusCode::NOT_FOUND);
@@ -148,17 +145,17 @@ async fn get_user(
     let conn = pool.get().unwrap(); 
     let user = conn
         .prepare("
-            SELECT email, client_id, group_id, role, account_uuid FROM user WHERE email = ?;
+            SELECT email, client_id, group_id, role, account_uuid FROM user WHERE account_uuid = ?;
         ").unwrap()
-        .query_row(params![email], |row| {
+        .query_row(params![account_uuid], |row| {
             Ok(User {
-                email: row.get::<usize, String>(0).unwrap(),
+                email: row.get(0).unwrap(),
                 client: row.get::<usize, u64>(1).unwrap(),
                 group: row.get::<usize, Option<u64>>(2).unwrap(),
                 role: row.get::<usize, String>(3).unwrap(),
                 account_uuid: row.get::<usize, String>(4).unwrap(),
             })
-        }).expect(&format!("User `{}` missing from db", email));
+        }).expect(&format!("User `{}` missing from db", account_uuid));
 
     return Ok((StatusCode::OK, Json(user)))
 }
@@ -170,9 +167,9 @@ async fn get_files(
     jar: CookieJar,
 ) -> Result<(StatusCode, Json<Value>), StatusCode> {
     let token = jar.get("token").ok_or(StatusCode::NOT_FOUND)?;
-    let email = match jwt::decode(token.value()) {
+    let account_uuid = match jwt::decode(token.value()) {
         Ok(token_data) => {
-            token_data.claims.user
+            token_data.claims.account_uuid
         }, 
         Err(_) => {
             return Err(StatusCode::NOT_FOUND);
@@ -182,17 +179,17 @@ async fn get_files(
     let conn = pool.get().unwrap(); 
     let user = conn
         .prepare("
-            SELECT email, client_id, group_id, role, account_uuid FROM user WHERE email = ?;
+            SELECT email, client_id, group_id, role, account_uuid FROM user WHERE account_uuid = ?;
         ").unwrap()
-        .query_row(params![email], |row| {
+        .query_row(params![account_uuid], |row| {
             Ok(User {
-                email: row.get::<usize, String>(0).unwrap(),
+                email: row.get(0).unwrap(),
                 client: row.get::<usize, u64>(1).unwrap(),
                 group: row.get::<usize, Option<u64>>(2).unwrap(),
                 role: row.get::<usize, String>(3).unwrap(),
                 account_uuid: row.get::<usize, String>(4).unwrap(),
             })
-        }).expect(&format!("User `{}` missing from db", email));
+        }).expect(&format!("User `{}` missing from db", account_uuid));
 
     let credentials_dir = env::var("CREDENTIALS_DIR").expect("CREDENTIALS_DIR unset");
 
@@ -226,33 +223,9 @@ async fn get_files(
     Ok((StatusCode::OK, Json(Value::Object(body))))
 }
 
-async fn sendgrid_email(to_email: &str, token: &str) -> Result<()> {
-    let p = Personalization::new(Email::new(to_email));
-    info!("send email to {to_email}");
-
-    let content = formatdoc!(r#"
-        visit <a href="https://cec-creds.ad.dlandau.nl/login">https://cec-creds.ad.dlandau.nl/login</a> and paste the following token: 
-        {}
-    "#, token);
-    let m = Message::new(Email::new("noreply-infomcec@dlandau.nl"))
-        .set_subject("[INFOMCEC] Credentials")
-        .add_content(
-            Content::new()
-                .set_content_type("text/html")
-                .set_value(content),
-        )
-        .add_personalization(p);
-
-    let mut api_key = env::var("SG_API_KEY").expect("Missing SG_API_KEY");
-    let sender = Sender::new(api_key, None);
-    sender.send(&m).await?;
-    
-    Ok(())
-}
-
 #[derive(Deserialize)]
 struct PatchUser {
-    email: String,
+    account_uuid: String,
     group: u64
 }
 
@@ -266,7 +239,7 @@ async fn patch_user(
         Ok(token_data) => {
             let role = token_data.claims.role;
             if role != "admin" {
-                info!("Attempting to create user with role {role}");
+                info!("Attempting to patch user with role {role}");
                 return Err(StatusCode::UNAUTHORIZED);
             }
             payload
@@ -283,9 +256,9 @@ async fn patch_user(
             SET
                 group_id = ?
             WHERE
-                email = ?
+                account_uuid = ?
         ").unwrap()
-        .execute(params![payload.group, payload.email])
+        .execute(params![payload.group, payload.account_uuid])
         .map_err(|e| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     if rows_updated > 0 { Ok(StatusCode::OK) } else { Err(StatusCode::NOT_FOUND) }
@@ -321,7 +294,7 @@ async fn create_user(
         ").unwrap()
         .query_row(params![email, "student", Uuid::new_v4().to_string()], |row| {
             Ok(User {
-                email: row.get::<usize, String>(0).unwrap(),
+                email: row.get::<usize, Option<String>>(0).unwrap(),
                 client: row.get::<usize, u64>(1).unwrap(),
                 group: row.get::<usize, Option<u64>>(2).unwrap(),
                 role: row.get::<usize, String>(3).unwrap(),
@@ -344,9 +317,9 @@ async fn download_file(
     };
 
     let token = jar.get("token").ok_or(StatusCode::NOT_FOUND)?;
-    let email = match jwt::decode(token.value()) {
+    let account_uuid = match jwt::decode(token.value()) {
         Ok(token_data) => {
-            token_data.claims.user
+            token_data.claims.account_uuid
         }, 
         Err(_) => {
             return Err(StatusCode::NOT_FOUND);
@@ -356,17 +329,17 @@ async fn download_file(
     let conn = pool.get().unwrap(); 
     let user = conn
         .prepare("
-            SELECT email, client_id, group_id, role, account_uuid FROM user WHERE email = ?;
+            SELECT email, client_id, group_id, role, account_uuid FROM user WHERE account_uuid = ?;
         ").unwrap()
-        .query_row(params![email], |row| {
+        .query_row(params![account_uuid], |row| {
             Ok(User {
-                email: row.get::<usize, String>(0).unwrap(),
+                email: row.get(0).unwrap(),
                 client: row.get::<usize, u64>(1).unwrap(),
                 group: row.get::<usize, Option<u64>>(2).unwrap(),
                 role: row.get::<usize, String>(3).unwrap(),
                 account_uuid: row.get::<usize, String>(4).unwrap(),
             })
-        }).expect(&format!("User `{}` missing from db", email));
+        }).expect(&format!("User `{}` missing from db", account_uuid));
 
     let conn = pool.get().unwrap(); 
 
@@ -405,22 +378,6 @@ async fn download_file(
     ];
 
     Ok((headers, body))
-}
-
-async fn send_admin_token() -> Result<()> {
-    let token_check = Path::new("./data/token_sent");
-    if token_check.exists() {
-        return Ok(())
-    }
-
-    info!("send admin token");
-    let claims = Claims::new(String::from("d.landau@uu.nl"), String::from("admin"));
-    let admin_token = jwt::encode(&claims)?;
-    sendgrid_email(&claims.user, &admin_token).await?;
-    fs::create_dir_all(token_check.parent().unwrap());
-    File::create(token_check);
-
-    Ok(())
 }
 
 #[tokio::main]

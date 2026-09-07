@@ -5,13 +5,13 @@ use std::{env, time::{SystemTime, UNIX_EPOCH}};
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Claims {
     exp: usize,
-    pub user: String,
+    pub account_uuid: String,
     pub role: String,
 }
 
 impl Claims {
     #[allow(dead_code)]
-    pub fn new(user: String, role: String) -> Self {
+    pub fn new(account_uuid: String, role: String) -> Self {
         let start = SystemTime::now();
         let since_the_epoch = start
             .duration_since(UNIX_EPOCH)
@@ -19,7 +19,7 @@ impl Claims {
         let expiration_s = since_the_epoch.as_secs() + 60 * 60 * 24 * 100;
 
         Self {
-            user, 
+            account_uuid, 
             role,
             exp: expiration_s as usize,
         }
