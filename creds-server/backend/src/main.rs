@@ -224,32 +224,26 @@ async fn get_files(
 }
 
 #[derive(Deserialize)]
-struct PatchUser {
+struct PatchUserGroup {
     account_uuid: String,
-    group: u64
+    group: u64,
 }
 
-async fn patch_user(
+async fn patch_user_group(
     State(pool): State<Pool<SqliteConnectionManager>>,
     jar: CookieJar,
-    Json(payload): Json<PatchUser>,
+    Json(payload): Json<PatchUserGroup>,
 ) -> Result<StatusCode, StatusCode> {
     let token = jar.get("token").ok_or(StatusCode::UNAUTHORIZED)?;
-    let payload = match jwt::decode(token.value()) {
-        Ok(token_data) => {
-            let role = token_data.claims.role;
-            if role != "admin" {
-                info!("Attempting to patch user with role {role}");
-                return Err(StatusCode::UNAUTHORIZED);
-            }
-            payload
-        }, 
-        Err(_) => {
-            return Err(StatusCode::FORBIDDEN);
-        }
+    let Ok(token_data) = jwt::decode(token.value()) else {
+        return Err(StatusCode::FORBIDDEN);
     };
 
-    let conn = pool.get().unwrap(); 
+    if (token_data.claims.role != "admin") {
+        return Err(StatusCode::UNAUTHORIZED);
+    }
+
+    let conn = pool.get().unwrap();
     let rows_updated = conn
         .prepare("
             UPDATE user
@@ -260,6 +254,41 @@ async fn patch_user(
         ").unwrap()
         .execute(params![payload.group, payload.account_uuid])
         .map_err(|e| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    if rows_updated > 0 { Ok(StatusCode::OK) } else { Err(StatusCode::NOT_FOUND) }
+}
+
+#[derive(Deserialize)]
+struct PatchUserEmail {
+    account_uuid: String,
+    email: String,
+}
+
+async fn patch_user_email(
+    State(pool): State<Pool<SqliteConnectionManager>>,
+    jar: CookieJar,
+    Json(payload): Json<PatchUserEmail>,
+) -> Result<StatusCode, StatusCode> {
+    let token = jar.get("token").ok_or(StatusCode::UNAUTHORIZED)?;
+    let Ok(token_data) = jwt::decode(token.value()) else {
+        return Err(StatusCode::FORBIDDEN);
+    };
+
+    if ((token_data.claims.role != "admin") && (token_data.claims.account_uuid != payload.account_uuid)) {
+        return Err(StatusCode::UNAUTHORIZED);
+    }
+
+    let conn = pool.get().unwrap();
+    let rows_updated = conn
+        .prepare("
+            UPDATE user
+            SET
+                email = ?
+            WHERE
+                account_uuid = ?
+        ").unwrap()
+        .execute(params![payload.email, payload.account_uuid])
+        .map_err(|e| StatusCode::FORBIDDEN)?;
 
     if rows_updated > 0 { Ok(StatusCode::OK) } else { Err(StatusCode::NOT_FOUND) }
 }
@@ -395,7 +424,8 @@ async fn main() -> Result<()> {
         .route("/api/users", post(create_user))
         .route("/api/users", get(get_users))
         .route("/api/user", get(get_user))
-        .route("/api/user", patch(patch_user))
+        .route("/api/user/group", patch(patch_user_group))
+        .route("/api/user/email", patch(patch_user_email))
         .route("/api/authenticate", get(authenticate))
         .route("/api/files", get(get_files))
         .route("/api/download/{file}", get(download_file))

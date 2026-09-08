@@ -1,0 +1,55 @@
+.patch-page {
+    width: 100%;
+    height: 500px;
+    display: flex; 
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+.patch-container { 
+    margin-top: 16px;
+    margin-bottom: 16px;
+    height: 260px;
+    display: flex; 
+    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--neutral-7);
+    padding: 16px;
+    border-radius: var(--border-radius);
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+
+.patch-control {
+    height: 130px;
+    display: flex;
+    flex-direction: column;
+    align-items:center;
+    justify-content: space-evenly;
+}
+
+.patch-button {
+    width: 100%;
+    height: 40px;
+    border-width: 1px; 
+    border-color: var(--neutral-3); 
+    font-weight: 200;
+    font-size: 16px;
+    color: var(--neutral-7); 
+    background-color: var(--primary-2);
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 1px 3px 0px;
+}
+.patch-button:hover { 
+    background-color: var(--primary-3);
+}
+.patch-button:active { 
+    background-color: var(--primary-4);
+}
+
+.patch-alert {
+    width: 200px
+}

@@ -5,9 +5,10 @@ import { AuthContext } from './AuthContext.tsx';
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { Files } from "./Files";
+import type { User } from "./types"
 
 function App() {
-    const [user, setUser] = useState({email: "", role: ""});
+    const [user, setUser] = useState<null | User>(null);
     const [attemptAuth, setAttemptAuth] = useState(false);
     const value = {user, setUser};
     const navigate = useNavigate();
@@ -22,7 +23,7 @@ function App() {
             })
             .then((body) => {
                 setAttemptAuth(true);
-                setUser({email: body["email"], role: body["role"]})
+                setUser({ ...body })
             })
             .catch((_) => {
                 setAttemptAuth(true);

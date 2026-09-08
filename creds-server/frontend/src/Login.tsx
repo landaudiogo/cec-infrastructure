@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
 import TextField from "@mui/material/TextField";
@@ -9,8 +9,11 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 import "./login.css";
+import { AuthContext } from "./AuthContext";
 
 export function Login() {
+    const { setUser } = useContext(AuthContext);
+    const [authenticated, setAuthenticated] = useState(false);
     const [accountUuid, setAccountUuid] = useState("");
     const [login, setLogin] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -22,7 +25,7 @@ export function Login() {
             fetch(`/api/authenticate?account_uuid=${accountUuid}`)
                 .then(res => {
                     if (res.status === 200) {
-                        navigate("/");
+                        setAuthenticated(true);
                     } else {
                         setAccountUuid("");
                     }
@@ -31,6 +34,25 @@ export function Login() {
             setLogin(false);
         }
     }, [login]);
+
+    useEffect(() => {
+        if (!authenticated)
+            return;
+
+        fetch("/api/user")
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error(`Request status not OK: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then((body) => {
+                setUser({ ...body });
+                navigate("/");
+            })
+
+    }, [authenticated]);
+
 
     function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
         setAccountUuid(e.target.value);

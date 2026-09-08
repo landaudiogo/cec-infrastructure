@@ -1,14 +1,12 @@
 import { createContext } from "react"
+import type { User } from "./types.tsx"
 
-type AuthContextType = {
-  user: {
-    email: string,
-    role : string,
-  };
-  setUser: React.Dispatch<React.SetStateAction<{email: string, role: string}>>;
+export type AuthContextType = {
+  user: User | null;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
 };
 
 export const AuthContext = createContext<AuthContextType>({
-    user: { email: "", role: "student"},
+    user: null,
     setUser: () => {},
 });

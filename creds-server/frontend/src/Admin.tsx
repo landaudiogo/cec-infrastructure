@@ -8,15 +8,10 @@ import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
 import CheckIcon from '@mui/icons-material/Check';
 
+import type { User } from './types';
+
 import './admin.css';
 
-type User = {
-    email: string, 
-    role: string,
-    client: number,
-    group: number,
-    account_uuid: string,
-}
 
 type UserListProps = {
     users: {
@@ -33,7 +28,7 @@ export default function UserList(props: UserListProps) {
     useEffect(() => {
         if (!patchUser) 
             return;
-        fetch(`/api/user`, { method: "PATCH", body: JSON.stringify(patchUser), headers: {"Content-Type": "application/json"} })
+        fetch(`/api/user/group`, { method: "PATCH", body: JSON.stringify(patchUser), headers: {"Content-Type": "application/json"} })
             .then((res) => {
                 if (!res.ok) {
                     throw new Error(`Request status not OK: ${res.status}`);
