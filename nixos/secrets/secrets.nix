@@ -11,4 +11,5 @@ in
     "root-ca-key.pem.age".publicKeys = [ landaudiogo k8s-master ];
     "creds-key.age".publicKeys = [ landaudiogo ];
     "creds-key.json.age".publicKeys = [ landaudiogo k8s-master ];
+    "creds-backend.json.age".publicKeys = [ landaudiogo k8s-master ];
 }

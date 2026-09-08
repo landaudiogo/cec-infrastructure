@@ -6,7 +6,7 @@ script_d="$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
 decrypted_d="${script_d}/../.decrypted"
 
 head -c 16 /dev/urandom | od -An -t x | tr -d ' ' > "${decrypted_d}/creds-key"
-key=$(cat "${decrypted_d}/creds-key")
+key=$(cat "${decrypted_d}/creds-key" | base64)
 
 echo '{
     "apiVersion": "v1",

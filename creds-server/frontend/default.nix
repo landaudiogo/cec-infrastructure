@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, tag, ... }:
 let
     frontendPackage = pkgs.buildNpmPackage {
         name = "creds-server-frontend";
@@ -34,7 +34,7 @@ rec {
     package = frontendPackage;
     image = pkgs.dockerTools.buildImage {
         name = "dclandau/cec-creds-frontend";
-        tag = "latest";
+        inherit tag;
         copyToRoot = [
             caddyfile
             pkgs.caddy

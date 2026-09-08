@@ -413,7 +413,8 @@ async fn download_file(
 async fn main() -> Result<()> {
     tracing_subscriber::fmt().with_max_level(Level::INFO).init();
 
-    let db = Path::new("./data/db.sqlite");
+    let db = format!("{}/db.sqlite", env::var("DB_DIR").expect("DB_DIR unset"));
+    let db = Path::new(&db);
     fs::create_dir_all(db.parent().unwrap());
     let manager = SqliteConnectionManager::file(db);
     let pool = r2d2::Pool::new(manager).unwrap();

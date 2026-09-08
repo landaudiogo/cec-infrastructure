@@ -15,6 +15,7 @@
             devShells.${system} = {
                 default = pkgs.mkShell {
                     packages = with pkgs; [
+                        agenix.outputs.packages.${system}.agenix
                         pkgs.openssl
                         pkgs.cfssl
                         (python3.withPackages (py-pkgs: with py-pkgs; []))

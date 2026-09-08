@@ -10,10 +10,10 @@
     let
         system = "x86_64-linux";
         pkgs = nixpkgs.legacyPackages.${system};
-        frontend = pkgs.callPackage ./creds-server/frontend {};
+        frontend = pkgs.callPackage ./creds-server/frontend { inherit tag; };
+        tag = self.shortRev or self.dirtyShortRev;
     in
     {
-
         devShells.${system} =
             {
                 default = pkgs.mkShell {
@@ -43,8 +43,10 @@
                         openssl
                     ];
                     RUST_LOG="info";
-                    CREDENTIALS_DIR="/home/landaudiogo/Repos/teaching/cec/cec-infrastructure/creds";
+                    CREDENTIALS_DIR="../../creds";
                     JWT_SECRET="terrible secret";
+                    ADMIN_UUID="3505ff66-ea63-4efe-9150-91025386636c";
+                    DB_DIR="./data";
                 };
             };
         packages.${system} =
@@ -61,7 +63,7 @@
             {
                 backend = pkgs.dockerTools.buildImage {
                     name = "dclandau/cec-creds-backend";
-                    tag = "latest";
+                    inherit tag;
                     copyToRoot = [
                         self.packages.${system}.backend
                         pkgs.cacert

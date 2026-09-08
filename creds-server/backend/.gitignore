@@ -2,5 +2,5 @@ target/
 admintoken
 studenttoken
 db.sqlite
-cookies
+cookies*
 data/

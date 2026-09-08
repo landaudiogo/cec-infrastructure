@@ -59,6 +59,7 @@ in
 
         kubelet.extraOpts = "--fail-swap-on=false";
 
+
         addonManager.bootstrapAddons = {
             local-path-storage = {
                 kind = "List";
@@ -67,6 +68,14 @@ in
             };
         };
     };
+
+    age.secrets.k8s-creds-key.file = ../secrets/creds-key.json.age;
+    age.secrets.k8s-creds-backend.file = ../secrets/creds-backend.json.age;
+    systemd.services.kube-addon-manager.preStart = ''
+        ${pkgs.kubectl}/bin/kubectl apply \
+            -f ${config.age.secrets.k8s-creds-key.path} \
+            -f ${config.age.secrets.k8s-creds-backend.path}
+    '';
 
     age.secrets.root-ca = {
         file = ../secrets/root-ca.pem.age;

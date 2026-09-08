@@ -1,0 +1,16 @@
+services:
+  frontend:
+    image: dclandau/cec-creds-frontend:${TAG}
+
+  backend:
+    image: dclandau/cec-creds-backend:${TAG}
+    environment:
+      ADMIN_UUID: "3505ff66-ea63-4efe-9150-91025386636c"
+      JWT_SECRET: "terrible secret"
+
+  nginx:
+    image: nginx
+    ports:
+      - 8080:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
