@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
       - name: cec-creds-frontend
-        image: dclandau/cec-creds-frontend:latest@sha256:fb9dadbfc7d0ef94fa76b621242cbfd581bc67f7ad22e6acd5fde844dcc9c6a3
+        image: dclandau/cec-creds-frontend:673ee40
         ports:
         - containerPort: 80
 ---

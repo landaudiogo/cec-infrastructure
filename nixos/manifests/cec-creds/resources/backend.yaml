@@ -1,8 +1,119 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: cec-creds-backend-pvc  # Sets name of PVC
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce  # Sets read and write access
+  resources:
+    requests:
+      storage: 1Gi  # Sets volume sizeapiVersion: v1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cec-creds-backend
+spec:
+  type: ClusterIP
+  selector:
+    app: cec-creds-backend
+  ports:
+    - port: 3000
+      targetPort: 3000
+      name: http
+---
 apiVersion: v1
 kind: Pod
 metadata:
   name: cec-creds-backend
+  labels:
+    app: cec-creds-backend
 spec:
+  restartPolicy: Always
+  initContainers:
+    - name: setup-credentials
+      image: alpine:3.20
+      command:
+        - /bin/sh
+        - -ec
+        - |
+          apk add --no-cache wget openssl unzip
+
+          ls -la /etc/secrets
+          cat /etc/secrets/creds-key
+
+          wget -q \
+            -O /tmp/creds.zip.enc \
+            https://github.com/landaudiogo/cec-infrastructure/raw/refs/heads/master/nixos/secrets/creds.zip.enc
+
+          openssl enc -d -aes-256-cbc -pbkdf2 -salt \
+            -in /tmp/creds.zip.enc \
+            -out /tmp/creds.zip \
+            -pass file:/etc/secrets/creds-key
+
+          unzip -o /tmp/creds.zip -d /etc/credentials
+      volumeMounts:
+        - name: credentials
+          mountPath: /etc/credentials
+        - name: creds-key
+          mountPath: /etc/secrets
+          readOnly: true
   containers:
-  - name: cec-creds-backend
-    image: dclandau/cec-creds-backend:latest@sha256:dd58bc1234cd93e5d135367f1d1f82f100a6c305762b5baaf72abe82c498cecf
+    - name: cec-creds-backend
+      image: dclandau/cec-creds-backend:673ee40
+      env:
+        - name: CREDENTIALS_DIR
+          value: "/etc/credentials/creds"
+        - name: ADMIN_UUID
+          valueFrom:
+            secretKeyRef:
+              name: creds-backend
+              key: ADMIN_UUID
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: creds-backend
+              key: JWT_SECRET
+        - name: DB_DIR
+          value: "/data/db"
+      volumeMounts:
+        - name: credentials
+          mountPath: /etc/credentials
+          readOnly: true
+        - name: db
+          mountPath: /data/db
+  volumes:
+    - name: credentials
+      emptyDir: {}
+    - name: creds-key
+      secret:
+        secretName: creds-key
+        items:
+          - key: creds-key
+            path: creds-key
+    - name: db
+      persistentVolumeClaim:
+        claimName: cec-creds-backend-pvc 
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: cec-creds-backend
+spec:
+  parentRefs:
+    - name: eg
+      sectionName: https.creds.cec.dlandau.nl
+  hostnames:
+    - "creds.cec.dlandau.nl"
+  rules:
+    - backendRefs:
+        - group: ""
+          kind: Service
+          name: cec-creds-backend
+          port: 3000
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /api
