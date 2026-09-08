@@ -1,3 +1,5 @@
+set -eo pipefail
+
 admin_creds_dir="creds/admins"
 
 
@@ -29,7 +31,7 @@ EOF
 }
 
 
-for i in landau nishant greg nathan
+for i in landau nishant
 do
 	echo "------------------------------- $i -------------------------------"
     admin_dir=${admin_creds_dir}/${i}
@@ -50,7 +52,7 @@ do
 
     # Sign server certificate with CA
     openssl x509 -req \
-    -days 3650 \
+    -days 200 \
     -in ${admin_dir}/$i.csr \
     -CA ca/ca.crt \
     -CAkey ca/ca.key \

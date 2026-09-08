@@ -47,7 +47,7 @@ shopt -s nullglob
 set -e
 client_creds_dir="creds/clients"
 
-for (( i=0; i<"$1"; i++ ))
+for (( i=1; i<="$1"; i++ ))
 do
     client_name="client${i}"
 	echo "------------------------------- $client_name -------------------------------"
@@ -70,7 +70,7 @@ do
 
     # Sign server certificate with CA
     openssl x509 -req \
-    -days 3650 \
+    -days 200 \
     -in ${client_dir}/$client_name.csr \
     -CA ca/ca.crt \
     -CAkey ca/ca.key \

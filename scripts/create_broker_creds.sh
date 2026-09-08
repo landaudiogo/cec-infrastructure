@@ -1,5 +1,6 @@
-#!/bin/bash
+#! bash
 
+set -eo pipefail
 
 broker_creds_dir="creds/brokers"
 
@@ -25,7 +26,7 @@ do
 
     # Sign server certificate with CA
     openssl x509 -req \
-    -days 3650 \
+    -days 200 \
     -in ${broker_dir}/$i.csr \
     -CA ca/ca.crt \
     -CAkey ca/ca.key \

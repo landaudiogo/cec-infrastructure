@@ -9,4 +9,6 @@ in
     "apitoken.age".publicKeys = [ landaudiogo k8s-master k8s-worker1 k8s-worker2 k8s-worker3 ];
     "root-ca.pem.age".publicKeys = [ landaudiogo k8s-master k8s-worker1 k8s-worker2 k8s-worker3 ];
     "root-ca-key.pem.age".publicKeys = [ landaudiogo k8s-master ];
+    "creds-key.age".publicKeys = [ landaudiogo ];
+    "creds-key.json.age".publicKeys = [ landaudiogo k8s-master ];
 }

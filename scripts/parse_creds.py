@@ -56,12 +56,13 @@ def write_rsa(filepath: str, content: str):
         f.write(content)
 
 def main(is_group: bool):
-    with open("./credentials.json") as f:
+    with open("./credentials/students.json") as f:
         credentials = json.load(f)
 
     for cred in credentials: 
-        vm = re.match(r"student-lab-(\d+)", cred["instance_name"]).group(1)
-        print(f"=== {vm} ===")
+        print(f'=== {cred["instance_name"]} ===')
+        vm = re.match(r"student-(\d+)", cred["instance_name"]).group(1)
+        vm = int(vm)
         cec_id = f"group{vm}" if is_group else f"client{vm}"
         creds_dir = f"./creds/groups/group{vm}" if is_group else f"./creds/clients/client{vm}"
         if not os.path.isdir(creds_dir):
