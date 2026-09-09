@@ -89,7 +89,7 @@ export default function UserList(props: UserListProps) {
             setEditing((editing) => {
                 let res = {...editing};
                 if (e.target.value.length <= 2) {
-                    res[account_uuid].group = parseInt(e.target.value);
+                    res[account_uuid].group = parseInt(e.target.value) || null;
                 }
                 return res;
             });
@@ -100,7 +100,10 @@ export default function UserList(props: UserListProps) {
         return (e: React.ChangeEvent<HTMLInputElement>) => {
             setEditing((editing) => {
                 let res = {...editing};
-                res[account_uuid].email = e.target.value;
+                let value: string | null = e.target.value;
+                value.trim();
+                value = value.length === 0 ? null : value;
+                res[account_uuid].email = value;
                 return res;
             });
         };

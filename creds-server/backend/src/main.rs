@@ -251,7 +251,7 @@ async fn patch_user(
         ").unwrap()
         .execute(params![payload.email, payload.role, payload.group, payload.client, payload.account_uuid])
         .map_err(|e| {
-            warn!("sql error: {e:?}");
+            warn!("sql error: {payload:?} {e:?}");
             StatusCode::INTERNAL_SERVER_ERROR
         })?;
 
