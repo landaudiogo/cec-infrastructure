@@ -1,0 +1,78 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kafka-create-topics
+spec:
+  completions: 1
+  backoffLimit: 4
+  template:
+    spec:
+      restartPolicy: OnFailure
+      initContainers:
+        - name: setup-credentials
+          image: alpine:3.20
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              apk add --no-cache wget openssl unzip
+
+              ls -la /etc/secrets
+              cat /etc/secrets/creds-key
+
+              wget -q \
+                -O /tmp/creds.zip.enc \
+                https://github.com/landaudiogo/cec-infrastructure/raw/refs/heads/master/nixos/secrets/creds.zip.enc
+
+              openssl enc -d -aes-256-cbc -pbkdf2 -salt \
+                -in /tmp/creds.zip.enc \
+                -out /tmp/creds.zip \
+                -pass file:/etc/secrets/creds-key
+
+              unzip -o /tmp/creds.zip -d /tmp/credentials
+
+              mv /tmp/credentials/creds/admins/landau/* /etc/creds
+              ls -la /etc/creds
+          volumeMounts:
+            - name: credentials
+              mountPath: /etc/creds
+            - name: creds-key
+              mountPath: /etc/secrets
+              readOnly: true
+      containers:
+        - name: create-topics
+          image: dclandau/cec-create-topics:46c15b1
+          env:
+            - name: KEYSTORE_LOCATION
+              value: "/etc/creds/kafka.keystore.pkcs12"
+            - name: TRUSTSTORE_LOCATION
+              value: "/etc/creds/kafka.truststore.pkcs12"
+            - name: KEYSTORE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-keystore
+                  key: KEYSTORE_PASSWORD
+            - name: TRUSTSTORE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-keystore
+                  key: KEYSTORE_PASSWORD
+            - name: BOOTSTRAP_SERVER
+              value: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
+            - name: NCLIENTS
+              value: "60"
+            - name: NGROUPS
+              value: "20"
+          volumeMounts:
+            - name: credentials
+              mountPath: /etc/creds
+              readOnly: true
+      volumes:
+        - name: credentials
+          emptyDir: {}
+        - name: creds-key
+          secret:
+            secretName: creds-key
+            items:
+              - key: creds-key
+                path: creds-key

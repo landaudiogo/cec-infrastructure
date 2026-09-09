@@ -5,3 +5,4 @@ resources:
   - ./resources/kafka-1.yaml
   - ./resources/kafka-2.yaml
   - ./resources/kafka-3.yaml
+  - ./resources/create-topics.yaml
