@@ -24,6 +24,7 @@ type UserListProps = {
 export default function UserList(props: UserListProps) {
     const { users, setUsers } = props;
     const [editing, setEditing] = useState<{[key: string]: User}>({});
+    const [viewUUID, setViewUUID] = useState<null | string>(null);
     const [patchUser, setPatchUser] = useState<User | null>(null)
 
     useEffect(() => {
@@ -150,7 +151,17 @@ export default function UserList(props: UserListProps) {
                         <TableRow
                             key={user.account_uuid}
                         >
-                            <TableCell align="left">{user.account_uuid}</TableCell>
+                            <TableCell
+                                align="center"
+                                sx={{
+                                    width: "400px",
+                                    minWidth: "400px",
+                                }}
+                                onMouseDown={(_) => setViewUUID(user.account_uuid)}
+                                onMouseUp={(_) => setViewUUID(null)}
+                            >
+                                { user.account_uuid === viewUUID ? user.account_uuid : "*".repeat(36)}
+                            </TableCell>
                             <TableCell align="left">
                                 {user.account_uuid in editing ?
                                     <input 
