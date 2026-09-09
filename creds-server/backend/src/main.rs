@@ -6,7 +6,7 @@ use r2d2::Pool;
 use r2d2_sqlite::{rusqlite::params, SqliteConnectionManager};
 use serde_json::{json, Value};
 use tokio;
-use tracing::{info, Level};
+use tracing::{info, warn, Level};
 use axum_extra::extract::cookie::{CookieJar, Cookie};
 use axum::{
     body::Body, extract::{Query, RawPathParams, State}, http::{header, StatusCode}, response::{IntoResponse, Response}, routing::{get, post, patch}, Json, Router
@@ -27,7 +27,7 @@ struct CreateUser {
     email: Option<String>,
 }
 
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 struct User {
     account_uuid: String,
     email: Option<String>,
@@ -223,16 +223,10 @@ async fn get_files(
     Ok((StatusCode::OK, Json(Value::Object(body))))
 }
 
-#[derive(Deserialize)]
-struct PatchUserGroup {
-    account_uuid: String,
-    group: u64,
-}
-
-async fn patch_user_group(
+async fn patch_user(
     State(pool): State<Pool<SqliteConnectionManager>>,
     jar: CookieJar,
-    Json(payload): Json<PatchUserGroup>,
+    Json(payload): Json<User>,
 ) -> Result<StatusCode, StatusCode> {
     let token = jar.get("token").ok_or(StatusCode::UNAUTHORIZED)?;
     let Ok(token_data) = jwt::decode(token.value()) else {
@@ -248,12 +242,18 @@ async fn patch_user_group(
         .prepare("
             UPDATE user
             SET
-                group_id = ?
+                email = ?,
+                role = ?,
+                group_id = ?,
+                client_id = ?
             WHERE
                 account_uuid = ?
         ").unwrap()
-        .execute(params![payload.group, payload.account_uuid])
-        .map_err(|e| StatusCode::INTERNAL_SERVER_ERROR)?;
+        .execute(params![payload.email, payload.role, payload.group, payload.client, payload.account_uuid])
+        .map_err(|e| {
+            warn!("sql error: {e:?}");
+            StatusCode::INTERNAL_SERVER_ERROR
+        })?;
 
     if rows_updated > 0 { Ok(StatusCode::OK) } else { Err(StatusCode::NOT_FOUND) }
 }
@@ -425,7 +425,7 @@ async fn main() -> Result<()> {
         .route("/api/users", post(create_user))
         .route("/api/users", get(get_users))
         .route("/api/user", get(get_user))
-        .route("/api/user/group", patch(patch_user_group))
+        .route("/api/user", patch(patch_user))
         .route("/api/user/email", patch(patch_user_email))
         .route("/api/authenticate", get(authenticate))
         .route("/api/files", get(get_files))

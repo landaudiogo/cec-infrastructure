@@ -33,7 +33,8 @@
     margin-bottom: 16px;
 }
 
-.group-input {
+
+.client-input {
     width: 30px;
     text-align: right;
     margin: 8px 0;
@@ -41,6 +42,68 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
+}
+
+.numeric-input {
+    width: 30px;
+    text-align: right;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    border-radius: var(--border-radius);
+    background-color: transparent;
+    border-color: var(--neutral-1);
+    border-width: 0px;
+    padding: 0.5em;
+    box-shadow: inset 0 1px 2px hsla(0, 0%, 0%, 0.1);
+}
+
+input:focus .numeric-input {
+    outline: none;
+    background-color: transparent;
+}
+
+.role-input {
+    width: 60px;
+    margin: 8px 0;
+    text-align: left;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    border-radius: var(--border-radius);
+    background-color: transparent;
+    border-color: var(--neutral-1);
+    border-width: 0px;
+    padding: 0.5em 0.5em 0.5em;
+    box-shadow: inset 0 1px 2px hsla(0, 0%, 0%, 0.1);
+}
+
+input:focus .role-input {
+    outline: none;
+    text-align: right;
+    background-color: transparent;
+}
+
+.email-input {
+    width: 120px;
+    margin: 8px 0;
+    text-align: left;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    border-radius: var(--border-radius);
+    background-color: transparent;
+    border-color: var(--neutral-1);
+    border-width: 0px;
+    padding: 0.5em 0.5em 0.5em;
+    box-shadow: inset 0 1px 2px hsla(0, 0%, 0%, 0.1);
+}
+
+input:focus .email-input {
+    outline: none;
+    text-align: right;
+    background-color: transparent;
 }
 
 .send-button {
@@ -77,4 +140,22 @@
 }
 .confirm-button:active { 
     background-color: var(--accent-green-7);
+}
+
+.edit-button {
+    width: 40px;
+    height: 40px;
+    border-width: 1px; 
+    border-color: var(--primary-2); 
+    font-weight: 550;
+    font-size: 14px;
+    color: var(--primary-2); 
+    background-color: var(--primary-7);
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 1px 3px 0px;
+}
+.edit-button:hover { 
+    background-color: var(--primary-6);
+}
+.edit-button:active { 
+    background-color: var(--primary-7);
 }

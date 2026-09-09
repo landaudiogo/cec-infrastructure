@@ -7,6 +7,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
 import CheckIcon from '@mui/icons-material/Check';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 
 import type { User } from './types';
 
@@ -22,21 +23,21 @@ type UserListProps = {
 
 export default function UserList(props: UserListProps) {
     const { users, setUsers } = props;
-    const [editing, setEditing] = useState<{[key: string]: string}>({});
-    const [patchUser, setPatchUser] = useState<{account_uuid: string, group: number} | undefined>(undefined)
+    const [editing, setEditing] = useState<{[key: string]: User}>({});
+    const [patchUser, setPatchUser] = useState<User | null>(null)
 
     useEffect(() => {
         if (!patchUser) 
             return;
-        fetch(`/api/user/group`, { method: "PATCH", body: JSON.stringify(patchUser), headers: {"Content-Type": "application/json"} })
+        fetch(`/api/user`, { method: "PATCH", body: JSON.stringify(patchUser), headers: {"Content-Type": "application/json"} })
             .then((res) => {
                 if (!res.ok) {
                     throw new Error(`Request status not OK: ${res.status}`);
                 }
-                setPatchUser(undefined);
+                setPatchUser(null);
                 setUsers((users) => {
                     let res = {...users};
-                    res[patchUser.account_uuid] = {...users[patchUser.account_uuid], group: patchUser.group};
+                    res[patchUser.account_uuid] = { ...patchUser };
                     return res;
                 });
                 setEditing((editing) => {
@@ -44,7 +45,7 @@ export default function UserList(props: UserListProps) {
                     delete res[patchUser.account_uuid];
                     return res;
                 });
-                setPatchUser(undefined);
+                setPatchUser(null);
             })
             .catch((e) => {
                 console.log(e)
@@ -55,15 +56,30 @@ export default function UserList(props: UserListProps) {
         return () => {
             setEditing((editing) => {
                 let res = {...editing} 
-                res[account_uuid] = "";
+                res[account_uuid] = {...users[account_uuid]};
                 return res;
             })
         };
     }
 
     function confirmEditing(account_uuid: string) {
+
         return () => {
-            setPatchUser({account_uuid, group: Number(editing[account_uuid])});
+            setPatchUser((_) => {
+                return {...editing[account_uuid]}
+            })
+        };
+    }
+
+    function handleClientValue(account_uuid: string) {
+        return (e: React.ChangeEvent<HTMLInputElement>) => {
+            setEditing((editing) => {
+                let res = {...editing};
+                if (e.target.value.length <= 2) {
+                    res[account_uuid].client = parseInt(e.target.value) || 0;
+                }
+                return res;
+            });
         };
     }
 
@@ -72,17 +88,48 @@ export default function UserList(props: UserListProps) {
             setEditing((editing) => {
                 let res = {...editing};
                 if (e.target.value.length <= 2) {
-                    res[account_uuid] = e.target.value;
+                    res[account_uuid].group = parseInt(e.target.value);
                 }
                 return res;
             });
         };
     }
 
+    function handleEmailValue(account_uuid: string) {
+        return (e: React.ChangeEvent<HTMLInputElement>) => {
+            setEditing((editing) => {
+                let res = {...editing};
+                res[account_uuid].email = e.target.value;
+                return res;
+            });
+        };
+    }
+
+    function handleRoleValue(account_uuid: string) {
+        return (e: React.ChangeEvent<HTMLInputElement>) => {
+            setEditing((editing) => {
+                let res = {...editing};
+                res[account_uuid].role = e.target.value;
+                return res;
+            });
+        };
+    }
+
     function validateNumber(e: React.KeyboardEvent<HTMLInputElement>) {
-        if (!/[0-9]/.test(e.key) && (e.key !== "Backspace")) { 
-          e.preventDefault();
-        }
+      const allowedKeys = [
+        "Backspace",
+        "Delete",
+        "ArrowLeft",
+        "ArrowRight",
+        "ArrowUp",
+        "ArrowDown",
+        "Tab",
+        "Shift",
+      ];
+
+      if (!/[0-9]/.test(e.key) && !allowedKeys.includes(e.key)) {
+        e.preventDefault();
+      }
     }
 
     return (
@@ -101,30 +148,58 @@ export default function UserList(props: UserListProps) {
                 <TableBody>
                     {Object.values(users).sort((a,b) => a.client > b.client ? 1 : -1).map((user) => (
                         <TableRow
-                        key={user.account_uuid}
+                            key={user.account_uuid}
                         >
                             <TableCell align="left">{user.account_uuid}</TableCell>
-                            <TableCell align="left">{user.email}</TableCell>
-                            <TableCell align="left">{user.role}</TableCell>
-                            <TableCell align="right">{user.client}</TableCell>
-                            {user.account_uuid in editing ?
-                                <TableCell align="right" onClick={editGroup(user.account_uuid)}>
+                            <TableCell align="left">
+                                {user.account_uuid in editing ?
+                                    <input 
+                                        onChange={handleEmailValue(user.account_uuid)} 
+                                        value={editing[user.account_uuid].email || ""}
+                                        className="email-input"
+                                    />
+                                    :<>{user.email}</>
+                                }
+                            </TableCell>
+                            <TableCell align="left">
+                                {user.account_uuid in editing ?
+                                    <input 
+                                        onChange={handleRoleValue(user.account_uuid)} 
+                                        value={editing[user.account_uuid].role || ""}
+                                        className="role-input"
+                                    />
+                                    :<>{user.role}</>
+                                }
+                            </TableCell>
+                            <TableCell align="right">
+                                {user.account_uuid in editing ?
+                                    <input 
+                                        onKeyDown={validateNumber} 
+                                        onChange={handleClientValue(user.account_uuid)} 
+                                        value={editing[user.account_uuid].client}
+                                        className="numeric-input"
+                                    />
+                                    :<>{user.client}</>
+                                }
+                            </TableCell>
+                            <TableCell align="right">
+                                {user.account_uuid in editing ?
                                     <input 
                                         autoFocus 
                                         onKeyDown={validateNumber} 
                                         onChange={handleGroupValue(user.account_uuid)} 
-                                        value={editing[user.account_uuid]}
-                                        className="group-input"
+                                        value={editing[user.account_uuid].group || ""}
+                                        className="numeric-input"
                                     />
-                                </TableCell>:
-                                <TableCell align="right" onClick={editGroup(user.account_uuid)}>{user.group != null ? user.group : "-"}</TableCell>
-                            }
-                            {user.account_uuid in editing ?
-                                <TableCell align="center">
-                                    <button className="confirm-button" onClick={confirmEditing(user.account_uuid)}><CheckIcon/></button>
-                                </TableCell>:
-                                <></>
-                            }
+                                    :<>{user.group != null ? user.group : "-"}</>
+                                }
+                            </TableCell>
+                            <TableCell align="center">
+                                {user.account_uuid in editing ?
+                                        <button className="confirm-button" onClick={confirmEditing(user.account_uuid)}><CheckIcon/></button>
+                                        :<button className="edit-button" onClick={editGroup(user.account_uuid)}><EditOutlinedIcon/></button>
+                                }
+                            </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
