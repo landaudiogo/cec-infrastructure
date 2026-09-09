@@ -10,8 +10,9 @@
     let
         system = "x86_64-linux";
         pkgs = nixpkgs.legacyPackages.${system};
-        frontend = pkgs.callPackage ./creds-server/frontend { inherit tag; };
         tag = self.shortRev or self.dirtyShortRev;
+        frontend = pkgs.callPackage ./creds-server/frontend { inherit tag; };
+        scripts = pkgs.callPackage ./scripts { inherit tag; };
     in
     {
         devShells.${system} =
@@ -58,6 +59,7 @@
                 default = self.packages.${system}.backend;
                 backend = crate.rootCrate.build;
                 frontend = frontend.package;
+                scripts = scripts.packages;
             };
         images.${system} =
             {
@@ -73,6 +75,7 @@
                     };
                 };
                 frontend = frontend.image;
+                scripts = scripts.images;
             };
     };
 }
