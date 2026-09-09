@@ -61,7 +61,7 @@ spec:
           readOnly: true
   containers:
     - name: cec-creds-backend
-      image: dclandau/cec-creds-backend:673ee40
+      image: dclandau/cec-creds-backend:bcfb0fc
       env:
         - name: CREDENTIALS_DIR
           value: "/etc/credentials/creds"
