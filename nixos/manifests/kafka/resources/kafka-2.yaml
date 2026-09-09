@@ -1,0 +1,188 @@
+apiVersion: v1
+kind: Service
+metadata:
+  # BROKER SPECIFIC
+  name: kafka-2
+spec:
+  type: ClusterIP
+  selector:
+    # BROKER SPECIFIC
+    app: kafka-2
+  ports:
+    - port: 9092
+      targetPort: 9092
+      name: external
+    - port: 9093
+      targetPort: 9093
+      name: controller
+    - port: 9094
+      targetPort: 9094
+      name: internal
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  # BROKER SPECIFIC
+  name: kafka-2
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  # BROKER SPECIFIC
+  name: kafka-2
+  labels:
+    # BROKER SPECIFIC
+    app: kafka-2
+spec:
+  restartPolicy: Always
+  initContainers:
+    - name: setup-credentials
+      image: alpine:3.20
+      command:
+        - /bin/sh
+        - -ec
+        - |
+          apk add --no-cache wget openssl unzip
+
+          ls -la /etc/secrets
+          cat /etc/secrets/creds-key
+
+          wget -q \
+            -O /tmp/creds.zip.enc \
+            https://github.com/landaudiogo/cec-infrastructure/raw/refs/heads/master/nixos/secrets/creds.zip.enc
+
+          openssl enc -d -aes-256-cbc -pbkdf2 -salt \
+            -in /tmp/creds.zip.enc \
+            -out /tmp/creds.zip \
+            -pass file:/etc/secrets/creds-key
+
+          unzip -o /tmp/creds.zip -d /tmp/credentials
+
+          # BROKER SPECIFIC
+          mv /tmp/credentials/creds/brokers/kafka-2/* /etc/kafka/secrets/
+          ls -la /etc/kafka/secrets
+      volumeMounts:
+        - name: credentials
+          mountPath: /etc/kafka/secrets
+        - name: creds-key
+          mountPath: /etc/secrets
+          readOnly: true
+  containers:
+    - image: confluentinc/cp-kafka@sha256:620734d9fc0bb1f9886932e5baf33806074469f40e3fe246a3fdbb59309535fa
+      name: kafka
+      resources:
+        requests:
+          cpu: "1500m"
+          memory: "4Gi"
+      env:
+        # BROKER SPECIFIC
+        - name: KAFKA_NODE_ID
+          value: "2"
+        # BROKER SPECIFIC
+        - name: KAFKA_ADVERTISED_LISTENERS
+          value: "INTERNAL://kafka-2:9094,EXTERNAL://kafka.cec.dlandau.nl:29092"
+
+        # These remaining variables are the same for all brokers
+        - name: KAFKA_INTER_BROKER_LISTENER_NAME
+          value: "INTERNAL"
+        - name: KAFKA_CONTROLLER_LISTENER_NAMES
+          value: "CONTROLLER"
+        - name: CLUSTER_ID
+          value: 'ciWo7IWazngRchmPES6q5A'
+        - name: KAFKA_PROCESS_ROLES
+          value: "broker,controller"
+        - name: KAFKA_CONTROLLER_QUORUM_VOTERS
+          value: "1@kafka-1:9093,2@$kafka-2:9093,3@$kafka-3:9093"
+        - name: KAFKA_LISTENERS
+          value: "EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093,INTERNAL://0.0.0.0:9094"
+        - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+          value: "CONTROLLER:SSL,INTERNAL:SSL,EXTERNAL:SSL"
+        - name: KAFKA_LOG_RETENTION_MS
+          value: "3600000"
+        - name: KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS
+          value: "300000"
+        - name: KAFKA_SUPER_USERS
+          value: "User:landau;User:kafka-1;User:kafka-2;User:kafka-3"
+        - name: KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS
+          value: "0"
+        - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+          value: "1"
+        - name: KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR
+          value: "1"
+        - name: KAFKA_AUTO_CREATE_TOPICS_ENABLE
+          value: "true"
+        - name: KAFKA_DELETE_TOPIC_ENABLE
+          value: "true"
+
+        - name: KAFKA_AUTHORIZER_CLASS_NAME
+          value: "org.apache.kafka.metadata.authorizer.StandardAuthorizer"
+        - name: KAFKA_SSL_KEYSTORE_TYPE
+          value: "PKCS12"
+        - name: KAFKA_SSL_KEYSTORE_LOCATION
+          value: "/etc/kafka/secrets/kafka.keystore.pkcs12"
+        - name: KAFKA_SSL_TRUSTSTORE_LOCATION
+          value: "/etc/kafka/secrets/kafka.truststore.jks"
+        - name: KAFKA_SSL_KEYSTORE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: kafka-keystore
+              key: KEYSTORE_PASSWORD
+        - name: KAFKA_SSL_KEY_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: kafka-keystore
+              key: KEYSTORE_PASSWORD
+        - name: KAFKA_SSL_TRUSTSTORE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: kafka-keystore
+              key: KEYSTORE_PASSWORD
+        - name: KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM
+          value: ""
+        - name: KAFKA_SSL_PRINCIPAL_MAPPING_RULES
+          value: "RULE:^.*[Cc][Nn]=([a-zA-Z0-9-.]*).*$$/$$1/L,DEFAULT"
+        - name: KAFKA_SSL_CLIENT_AUTH
+          value: "required"
+
+      volumeMounts:
+        - name: credentials
+          mountPath: /etc/kafka/secrets
+          readOnly: true
+        - name: kafka-data
+          mountPath: /var/lib/kafka/data
+  volumes:
+    - name: credentials
+      emptyDir: {}
+    - name: kafka-data
+      persistentVolumeClaim:
+        # BROKER SPECIFIC
+        claimName: kafka-2
+    - name: creds-key
+      secret:
+        secretName: creds-key
+        items:
+          - key: creds-key
+            path: creds-key
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: TCPRoute
+metadata:
+  # BROKER SPECIFIC
+  name: kafka-2
+spec:
+  parentRefs:
+  - name: eg
+    # BROKER SPECIFIC
+    sectionName: kafka2-ssl
+  rules:
+  - backendRefs:
+    # BROKER SPECIFIC
+    - name: kafka-2
+      port: 9092
