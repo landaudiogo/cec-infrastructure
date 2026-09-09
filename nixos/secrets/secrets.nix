@@ -12,4 +12,5 @@ in
     "creds-key.age".publicKeys = [ landaudiogo ];
     "creds-key.json.age".publicKeys = [ landaudiogo k8s-master ];
     "creds-backend.json.age".publicKeys = [ landaudiogo k8s-master ];
+    "kafka-keystore.json.age".publicKeys = [ landaudiogo k8s-master ];
 }
