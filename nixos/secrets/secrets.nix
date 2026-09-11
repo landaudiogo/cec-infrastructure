@@ -13,4 +13,6 @@ in
     "creds-key.json.age".publicKeys = [ landaudiogo k8s-master ];
     "creds-backend.json.age".publicKeys = [ landaudiogo k8s-master ];
     "kafka-keystore.json.age".publicKeys = [ landaudiogo k8s-master ];
+    "students.json.age".publicKeys = [ landaudiogo ];
+    "groups.json.age".publicKeys = [ landaudiogo ];
 }
