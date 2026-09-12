@@ -1,6 +1,16 @@
-set -eo pipefail
+#! bash
+#
+# Script to create the administrator credentials
+#
+# Required environment variables:
+#   * ADMIN_CREDS_DIR
+#   * CA_CRT
+#   * CA_KEY
+#   * STORE_PASS
 
-admin_creds_dir="creds/admins"
+set -euo pipefail
+
+admin_creds_dir="${ADMIN_CREDS_DIR}"
 
 
 make_cnf () {
@@ -23,9 +33,9 @@ make_client_props () {
     cat << EOF > "$2"
 security.protocol = SSL
 ssl.truststore.location=creds/admins/$1/kafka.truststore.pkcs12
-ssl.truststore.password=cc2023
+ssl.truststore.password=${STORE_PASS}
 ssl.keystore.location=creds/admins/$1/kafka.keystore.pkcs12
-ssl.keystore.password=cc2023
+ssl.keystore.password=${STORE_PASS}
 ssl.endpoint.identification.algorithm=
 EOF
 }
@@ -40,7 +50,7 @@ do
 
     make_cnf $i ${admin_dir}/${i}.cnf
     make_client_props $i ${admin_dir}/client-ssl.properties
-    cp ca/ca.crt ${admin_dir}/
+    cp "${CA_CRT}" ${admin_dir}/
 
     # Create server key & certificate signing request(.csr file)
     openssl req -new \
@@ -54,8 +64,8 @@ do
     openssl x509 -req \
     -days 200 \
     -in ${admin_dir}/$i.csr \
-    -CA ca/ca.crt \
-    -CAkey ca/ca.key \
+    -CA "${CA_CRT}" \
+    -CAkey "${CA_KEY}" \
     -CAcreateserial \
     -out ${admin_dir}/$i.crt \
     -extfile ${admin_dir}/$i.cnf
@@ -65,26 +75,26 @@ do
     -in ${admin_dir}/$i.crt \
     -inkey ${admin_dir}/$i.key \
     -chain \
-    -CAfile ca/ca.pem \
+    -CAfile "${CA_KEY}" \
     -name $i \
     -out ${admin_dir}/$i.p12 \
-    -password pass:cc2023
+    -password "pass:${STORE_PASS}"
 
     # Create server keystore
     keytool -importkeystore \
-    -deststorepass cc2023 \
+    -deststorepass "${STORE_PASS}" \
     -destkeystore ${admin_dir}/kafka.keystore.pkcs12 \
     -srckeystore ${admin_dir}/$i.p12 \
     -deststoretype PKCS12  \
     -srcstoretype PKCS12 \
     -noprompt \
-    -srcstorepass cc2023
+    -srcstorepass "${STORE_PASS}"
 
     keytool -keystore ${admin_dir}/kafka.truststore.pkcs12 \
     -alias CARoot \
-    -importcert -file ca/ca.crt \
+    -importcert -file "${CA_CRT}" \
     -noprompt \
-    -storepass cc2023 \
+    -storepass "${STORE_PASS}" \
     -deststoretype PKCS12
 
     rm "${admin_dir}/${i}".*

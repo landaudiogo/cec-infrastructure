@@ -15,4 +15,5 @@ in
     "kafka-keystore.json.age".publicKeys = [ landaudiogo k8s-master ];
     "students.json.age".publicKeys = [ landaudiogo ];
     "groups.json.age".publicKeys = [ landaudiogo ];
+    "kafka-keystore-key.age".publicKeys = [ landaudiogo ];
 }
