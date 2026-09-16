@@ -8,7 +8,7 @@ import Alert from '@mui/material/Alert';
 import "./patchEmail.css";
 
 function isEmailValid(email: string): boolean {
-    return /^[.a-z0-9]+@uu\.nl$/.test(email)
+    return /^[.a-z0-9]+@[.a-z0-9]*uu\.nl$/.test(email)
 }
 
 export function PatchEmail() {
