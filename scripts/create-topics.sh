@@ -30,6 +30,7 @@ create_topic_dev () {
     kafka-topics.sh \
         --command-config "$properties_file" \
         --bootstrap-server "$BOOTSTRAP_SERVER" \
+        --if-not-exists \
         --create \
         --topic "$1" \
         --partitions 16 \
@@ -66,8 +67,18 @@ create_topic_demo () {
     kafka-topics.sh \
         --command-config "$properties_file" \
         --bootstrap-server "$BOOTSTRAP_SERVER" \
+        --if-not-exists \
         --create \
         --topic "experiment" \
+        --partitions 16 \
+        --replication-factor 2
+
+    kafka-topics.sh \
+        --command-config "$properties_file" \
+        --bootstrap-server "$BOOTSTRAP_SERVER" \
+        --if-not-exists \
+        --create \
+        --topic "experiment-document" \
         --partitions 16 \
         --replication-factor 2
 }
@@ -111,3 +122,5 @@ for (( i=1; i<="$NGROUPS"; i++ )); do
     create_topic_dev "$user"
     grant_read_topic_demo "$user"
 done
+
+rm "$properties_file"
