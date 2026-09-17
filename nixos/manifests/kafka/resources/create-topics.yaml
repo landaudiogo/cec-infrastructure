@@ -41,7 +41,7 @@ spec:
               readOnly: true
       containers:
         - name: create-topics
-          image: dclandau/cec-create-topics:46c15b1
+          image: dclandau/cec-create-topics:340b45d
           env:
             - name: KEYSTORE_LOCATION
               value: "/etc/creds/kafka.keystore.pkcs12"
@@ -60,7 +60,7 @@ spec:
             - name: BOOTSTRAP_SERVER
               value: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
             - name: NCLIENTS
-              value: "60"
+              value: "70"
             - name: NGROUPS
               value: "20"
           volumeMounts:
