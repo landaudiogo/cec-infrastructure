@@ -3,14 +3,15 @@
 # Script to create the administrator credentials
 #
 # Required environment variables:
-#   * ADMIN_CREDS_DIR
+#   * CREDS_DIR
 #   * CA_CRT
 #   * CA_KEY
+#   * CA_FILE: CA_CRT CA_KEY merged
 #   * STORE_PASS
 
 set -euo pipefail
 
-admin_creds_dir="${ADMIN_CREDS_DIR}"
+admin_creds_dir="$CREDS_DIR/admins"
 
 
 make_cnf () {
@@ -40,7 +41,6 @@ ssl.endpoint.identification.algorithm=
 EOF
 }
 
-
 for i in landau nishant
 do
 	echo "------------------------------- $i -------------------------------"
@@ -50,7 +50,7 @@ do
 
     make_cnf $i ${admin_dir}/${i}.cnf
     make_client_props $i ${admin_dir}/client-ssl.properties
-    cp "${CA_CRT}" ${admin_dir}/
+    cp "${CA_CRT}" ${admin_dir}/ca.crt
 
     # Create server key & certificate signing request(.csr file)
     openssl req -new \
@@ -75,7 +75,7 @@ do
     -in ${admin_dir}/$i.crt \
     -inkey ${admin_dir}/$i.key \
     -chain \
-    -CAfile "${CA_KEY}" \
+    -CAfile "${CA_FILE}" \
     -name $i \
     -out ${admin_dir}/$i.p12 \
     -password "pass:${STORE_PASS}"

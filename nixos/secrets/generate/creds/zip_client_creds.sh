@@ -1,7 +1,8 @@
-set -e
+#! bash
 
-script_d="$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
-creds_d="${script_d}/../creds/clients"
+set -euo pipefail
+
+creds_d="$CREDS_DIR/clients"
 
 cd "$creds_d"
 

@@ -1,4 +1,5 @@
 import os
+import stat
 import json
 import textwrap
 import re
@@ -29,14 +30,20 @@ def write_aws(dir: str, username: str, password: str, instance: str):
     with open(f"{dir}/aws", "w") as f:
         f.write(content)
 
-def write_ssh_config(dir: str, vm_id: int, ip: str, is_group: bool):
-    def ssh_config(vm_id: int, ip: str, is_group: bool):
-        if is_group:
-            host = f"group{vm_id}"
-            identity_file = f"~/.ssh/group{vm_id}_rsa"
-        else: 
-            host = f"client{vm_id}"
-            identity_file = f"~/.ssh/client{vm_id}_rsa"
+def write_ssh_config(
+    dir: str,
+    vm_id: int,
+    ip: str,
+    host: str,
+    identity_file: str
+):
+    def ssh_config(ip: str):
+        # if is_group:
+        #     host = f"group{vm_id}"
+        #     identity_file = f"~/.ssh/group{vm_id}_rsa"
+        # else: 
+        #     host = f"client{vm_id}"
+        #     identity_file = f"~/.ssh/client{vm_id}_rsa"
 
         return textwrap.dedent(f"""
             Host {host}
@@ -47,29 +54,67 @@ def write_ssh_config(dir: str, vm_id: int, ip: str, is_group: bool):
               IdentityFile {identity_file}
         """).strip()
 
-    content = ssh_config(vm_id, ip, is_group)
+    content = ssh_config(ip)
     with open(f"{dir}/ssh_config", "w") as f:
         f.write(content)
 
 def write_rsa(filepath: str, content: str):
+    if os.path.exists(filepath):
+        os.remove(filepath)
+
     with open(filepath, "w") as f:
         f.write(content)
+    os.chmod(filepath, stat.S_IRUSR)
 
-def main(is_group: bool):
-    with open("./credentials/students.json") as f:
+def parse_group_credentials(credentials_path, creds_dir):
+    with open(credentials_path) as f:
+        credentials = json.load(f)
+
+    for cred in credentials: 
+        print(f'=== {cred["instance_name"]} ===')
+        vm = re.match(r"group-(\d+)", cred["instance_name"]).group(1)
+        vm = int(vm)
+        cec_id = f"group{vm}"
+        cred_dir = f"{creds_dir}/groups/{cec_id}"
+        if not os.path.isdir(cred_dir):
+            continue
+        write_readme(cred_dir)
+        write_aws(cred_dir, cred["aws_iam_user"], cred["aws_console_password"], cred["instance_name"])
+        write_ssh_config(cred_dir, vm, cred["public_ip"], cec_id, f"~/.ssh/{cec_id}_rsa")
+        write_rsa(f"{cred_dir}/{cec_id}_rsa", cred["ssh_private_key"])
+
+def parse_student_credentials(credentials_path, creds_dir):
+    with open(credentials_path) as f:
         credentials = json.load(f)
 
     for cred in credentials: 
         print(f'=== {cred["instance_name"]} ===')
         vm = re.match(r"student-(\d+)", cred["instance_name"]).group(1)
         vm = int(vm)
-        cec_id = f"group{vm}" if is_group else f"client{vm}"
-        creds_dir = f"./creds/groups/group{vm}" if is_group else f"./creds/clients/client{vm}"
-        if not os.path.isdir(creds_dir):
+        cec_id = f"client{vm}"
+        cred_dir = f"{creds_dir}/clients/{cec_id}"
+        if not os.path.isdir(cred_dir):
             continue
-        write_readme(creds_dir)
-        write_aws(creds_dir, cred["aws_iam_user"], cred["aws_console_password"], cred["instance_name"])
-        write_ssh_config(creds_dir, vm, cred["public_ip"], is_group)
-        write_rsa(f"{creds_dir}/{cec_id}_rsa", cred["ssh_private_key"])
+        write_readme(cred_dir)
+        write_aws(cred_dir, cred["aws_iam_user"], cred["aws_console_password"], cred["instance_name"])
+        write_ssh_config(cred_dir, vm, cred["public_ip"], cec_id, f"~/.ssh/{cec_id}_rsa")
+        write_rsa(f"{cred_dir}/{cec_id}_rsa", cred["ssh_private_key"])
 
-main(False)
+def main():
+    creds_dir = os.getenv("CREDS_DIR")
+    if creds_dir is None:
+        raise Exception("environment variable CREDS_DIR missing")
+
+    student_credentials_path = os.getenv("STUDENT_CREDENTIALS")
+    if student_credentials_path is None:
+        raise Exception("environment variable STUDENT_CREDENTIALS missing")
+
+    group_credentials_path = os.getenv("GROUP_CREDENTIALS")
+    if group_credentials_path is None:
+        raise Exception("environment variable GROUP_CREDENTIALS missing")
+
+    parse_student_credentials(student_credentials_path, creds_dir)
+    parse_group_credentials(group_credentials_path, creds_dir)
+
+if __name__ == "__main__":
+    main()

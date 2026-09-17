@@ -23,6 +23,7 @@
                         ]))
                         jre_minimal
                         jq
+                        zip
                     ];
                 };
                 manifests = pkgs.mkShell {

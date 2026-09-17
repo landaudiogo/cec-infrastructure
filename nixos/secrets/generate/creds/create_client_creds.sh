@@ -1,4 +1,13 @@
-#!/bin/bash 
+#! bash
+#
+# Script to create the group credentials
+#
+# Required environment variables:
+#   * CREDS_DIR
+#   * CA_CRT
+#   * CA_KEY
+#   * CA_FILE: CA_CRT CA_KEY merged
+#   * STORE_PASS
 
 USAGE="Usage: create_client_creds.sh <number-clients>
 
@@ -27,9 +36,9 @@ make_client_props () {
     cat << EOF > "$2"
 security.protocol = SSL
 ssl.truststore.location=creds/clients/$1/kafka.truststore.pkcs12
-ssl.truststore.password=cc2023
+ssl.truststore.password=$STORE_PASS
 ssl.keystore.location=creds/clients/$1/kafka.keystore.pkcs12
-ssl.keystore.password=cc2023
+ssl.keystore.password=$STORE_PASS
 EOF
 }
 
@@ -45,7 +54,7 @@ fi
 
 shopt -s nullglob
 set -e
-client_creds_dir="creds/clients"
+client_creds_dir="$CREDS_DIR/clients"
 
 for (( i=1; i<="$1"; i++ ))
 do
@@ -57,7 +66,7 @@ do
 
     make_cnf $client_name ${client_dir}/${client_name}.cnf
     make_client_props $client_name ${client_dir}/client-ssl.properties
-    cp ca/ca.crt ${client_dir}/
+    cp "$CA_CRT" "${client_dir}/ca.crt"
 
 
     # Create server key & certificate signing request(.csr file)
@@ -72,8 +81,8 @@ do
     openssl x509 -req \
     -days 200 \
     -in ${client_dir}/$client_name.csr \
-    -CA ca/ca.crt \
-    -CAkey ca/ca.key \
+    -CA "$CA_CRT" \
+    -CAkey "$CA_KEY" \
     -CAcreateserial \
     -out ${client_dir}/$client_name.crt \
     -extfile ${client_dir}/$client_name.cnf
@@ -83,26 +92,26 @@ do
     -in ${client_dir}/$client_name.crt \
     -inkey ${client_dir}/$client_name.key \
     -chain \
-    -CAfile ca/ca.pem \
+    -CAfile "$CA_FILE" \
     -name $client_name \
     -out ${client_dir}/$client_name.p12 \
-    -password pass:cc2023
+    -password "pass:$STORE_PASS"
 
     # Create server keystore
     keytool -importkeystore \
-    -deststorepass cc2023 \
+    -deststorepass "$STORE_PASS" \
     -destkeystore ${client_dir}/kafka.keystore.pkcs12 \
     -srckeystore ${client_dir}/$client_name.p12 \
     -deststoretype PKCS12  \
     -srcstoretype PKCS12 \
     -noprompt \
-    -srcstorepass cc2023
+    -srcstorepass "$STORE_PASS"
 
     keytool -keystore ${client_dir}/kafka.truststore.pkcs12 \
     -alias CARoot \
-    -importcert -file ca/ca.crt \
+    -importcert -file "$CA_CRT" \
     -noprompt \
-    -storepass cc2023 \
+    -storepass "$STORE_PASS" \
     -deststoretype PKCS12
 
     rm "${client_dir}/${client_name}".*
