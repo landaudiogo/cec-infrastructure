@@ -35,6 +35,7 @@ in
     "experiment-producer-stress-secret.json.age".publicKeys = [ landaudiogo k8s-master ];
     "database-init.json.age".publicKeys = [ landaudiogo k8s-master ];
     "external-services.yaml.age".publicKeys = [ landaudiogo k8s-master ];
+    "grafana.json.age".publicKeys = [ landaudiogo k8s-master ];
 
     "students.json.age".publicKeys = [ landaudiogo ];
     "groups.json.age".publicKeys = [ landaudiogo ];
