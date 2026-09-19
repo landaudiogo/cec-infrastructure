@@ -1,0 +1,130 @@
+# prometheus:
+#   image: prom/prometheus
+#   volumes:
+#     - ./prometheus-config.yml:/etc/prometheus/prometheus.yml
+#     - prometheus-data:/prometheus
+#   ports: 
+#     - 3005:9090
+#   command: 
+#     - "--config.file=/etc/prometheus/prometheus.yml"
+#     - "--storage.tsdb.path=/prometheus"
+#     - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+#     - "--web.console.templates=/usr/share/prometheus/consoles"
+#     - "--storage.tsdb.retention.time=2y"
+#   extra_hosts: 
+#     - host.docker.internal:host-gateway
+#     - experiment-producer-host:${EXPERIMENT_PRODUCER_HOST}
+#     - notifications-service-host:${NOTIFICATIONS_SERVICE_HOST}
+#     - http-load-generator-host:${HTTP_LOAD_GENERATOR_HOST}
+#     - group0:${GROUP0_HOST}
+#     - group1:${GROUP1_HOST}
+#     - group2:${GROUP2_HOST}
+#     - group3:${GROUP3_HOST}
+#     - group4:${GROUP4_HOST}
+#     - group5:${GROUP5_HOST}
+#     - group6:${GROUP6_HOST}
+#     - group7:${GROUP7_HOST}
+#     - group8:${GROUP8_HOST}
+#     - group9:${GROUP9_HOST}
+#     - group10:${GROUP10_HOST}
+#     - group11:${GROUP11_HOST}
+#     - group12:${GROUP12_HOST}
+#     - group13:${GROUP13_HOST}
+#     - group14:${GROUP14_HOST}
+#     - landau:${LANDAU_HOST}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+data:
+  prometheus.yaml: |
+    global:
+      scrape_interval: 1m
+      scrape_timeout: 10s
+
+    scrape_configs:
+
+      - job_name: notifications-service
+        scrape_interval: 1s
+        metrics_path: /api/metrics
+        static_configs:
+        - targets: ['notifications-service:3000']
+
+      - job_name: experiment-producer
+        scrape_interval: 1s
+        static_configs:
+        - targets: ['experiment-producer:3001']
+
+      - job_name: http-load-generator
+        scrape_interval: 1s
+        static_configs:
+        - targets: ['http-load-generator:3002']
+
+      # Get metrics from other prometheus servers
+      - job_name: infrastructure-costs
+        scrape_interval: 15s
+        metrics_path: '/federate'
+
+        params:
+          'match[]':
+            - '{__name__="node_cpu_seconds_total"}'
+            - '{__name__="node_memory_MemTotal_bytes"}'
+            - '{__name__="node_memory_MemAvailable_bytes"}'
+
+        static_configs:
+        - targets: 
+          - 'group0:3008'
+          - 'group1:3008'
+          - 'group2:3008'
+          - 'group3:3008'
+          - 'group4:3008'
+          - 'group5:3008'
+          - 'group6:3008'
+          - 'group7:3008'
+          - 'group8:3008'
+          - 'group9:3008'
+          - 'group10:3008'
+          - 'group11:3008'
+          - 'group12:3008'
+          - 'group13:3008'
+          - 'group14:3008'
+          - 'landau:3008'
+        
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+spec:
+  type: ClusterIP
+  selector:
+    app: prometheus
+  ports:
+    - port: 9090
+      targetPort: 9090
+      name: prometheus
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: prometheus
+  labels:
+    app: prometheus
+spec:
+  containers:
+    - name: prometheus
+      image: prom/prometheus:v3.13.3
+      args:
+        - --config.file=/etc/prometheus/prometheus.yaml
+        - --storage.tsdb.path=/prometheus
+        - --storage.tsdb.retention.time=2y
+      volumeMounts:
+        - name: prometheus-config
+          mountPath: /etc/prometheus/prometheus.yaml
+          subPath: prometheus.yaml
+          readOnly: true
+  volumes:
+    - name: prometheus-config
+      configMap:
+        name: prometheus-config

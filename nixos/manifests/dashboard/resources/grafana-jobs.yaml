@@ -1,0 +1,79 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: grafana-folder-permissions
+spec:
+  backoffLimit: 10
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: curl
+          image: curlimages/curl:8.11.0
+          env:
+            - name: USER
+              valueFrom:
+                secretKeyRef: {name: grafana, key: admin-user}
+            - name: PASS
+              valueFrom:
+                secretKeyRef: {name: grafana, key: admin-password}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -e
+              until curl -sf http://dashboard-grafana/api/health; do sleep 5; done
+              curl -sf -u "$USER:$PASS" \
+                -X POST http://dashboard-grafana/api/folders/admin/permissions \
+                -H 'Content-Type: application/json' \
+                -d '{"items": []}'
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: grafana-users
+spec:
+  backoffLimit: 10
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: curl
+          image: curlimages/curl:8.11.0
+          volumeMounts:
+            - name: grafana-secret
+              mountPath: /etc/grafana-secret
+              readOnly: true
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -eu
+              SECRET_DIR=/etc/grafana-secret
+              ADMIN_USER=$(cat "$SECRET_DIR/admin-user")
+              ADMIN_PASSWORD=$(cat "$SECRET_DIR/admin-password")
+
+              until curl -sf http://dashboard-grafana/api/health; do sleep 5; done
+
+              for i in $(seq 1 20); do
+                password=$(cat "$SECRET_DIR/group${i}")
+                status=$(curl -s -o /tmp/out -w '%{http_code}' \
+                  -u "${ADMIN_USER}:${ADMIN_PASSWORD}" \
+                  -X POST \
+                  -H "Content-Type: application/json" \
+                  -d "{
+                        \"name\": \"group${i}\",
+                        \"login\": \"group${i}\",
+                        \"password\": \"${password}\",
+                        \"email\": \"group${i}@uu.nl\",
+                        \"OrgId\": 1
+                      }" \
+                  http://dashboard-grafana/api/admin/users)
+                case "$status" in
+                  200|201) echo "group${i}: created" ;;
+                  412)     echo "group${i}: already exists, skipping" ;;
+                  *)       echo "group${i}: failed ($status)"; cat /tmp/out; exit 1 ;;
+                esac
+              done
+      volumes:
+        - name: grafana-secret
+          secret:
+            secretName: grafana
