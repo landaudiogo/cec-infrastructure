@@ -8,6 +8,7 @@
 #   * CA_KEY
 #   * CA_FILE: CA_CRT CA_KEY merged
 #   * STORE_PASS
+#   * GRAFANA_SECRET
 
 USAGE="Usage: create_group_creds.sh <number-groups>
 
@@ -115,4 +116,8 @@ do
     -deststoretype PKCS12
 
     rm "${group_dir}/${group_name}".*
+
+    generate-jwt-token --client-id "$group_name" > "${group_dir}/token"
+    grafana_password="$(jq -r '.data.'"$group_name" < "$GRAFANA_SECRET" | base64 -d)"
+    echo "USERNAME=${group_name}"$'\n'"PASSWORD=${grafana_password}" > "${group_dir}/grafana"
 done
