@@ -11,3 +11,4 @@ helmCharts:
 resources:
   - ./resources/prometheus.yaml
   - ./resources/grafana-jobs.yaml
+  - ./resources/routes.yaml

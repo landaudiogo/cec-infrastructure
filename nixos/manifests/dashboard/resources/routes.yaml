@@ -1,0 +1,53 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: grafana-redirect
+spec:
+  parentRefs:
+    - name: eg
+      sectionName: http
+  hostnames:
+    - "grafana.cec.dlandau.nl"
+  rules:
+    # Let ACME HTTP-01 challenges through untouched
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /.well-known/acme-challenge/
+      backendRefs:
+        - group: ""
+          kind: Service
+          name: dashboard-grafana
+          port: 80
+    # Redirect everything else to HTTPS
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            statusCode: 301
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: grafana
+spec:
+  parentRefs:
+    - name: eg
+      sectionName: https.grafana.cec.dlandau.nl
+  hostnames:
+    - "grafana.cec.dlandau.nl"
+  rules:
+    - backendRefs:
+        - group: ""
+          kind: Service
+          name: dashboard-grafana
+          port: 80
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /

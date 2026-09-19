@@ -40,6 +40,15 @@ spec:
         certificateRefs:
         - kind: Secret
           name: pgadmin.cec.dlandau.nl
+    - name: https.grafana.cec.dlandau.nl
+      protocol: HTTPS
+      hostname: grafana.cec.dlandau.nl
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+        - kind: Secret
+          name: grafana.cec.dlandau.nl
     - name: https.notifications.cec.dlandau.nl
       protocol: HTTPS
       hostname: notifications.cec.dlandau.nl
