@@ -11,6 +11,7 @@ decrypted_d="${script_d}/../.decrypted"
 
 keys=(
     "database-secret.json"
+    "event-secret"
     "http-group-id"
 )
 
@@ -18,7 +19,7 @@ for key in "${keys[@]}"; do
     agenix -d "$key.age" > "${decrypted_d}/$key"
 done
 
-key="$(head -c 16 /dev/urandom | od -An -t x | tr -d '[:space:]' | base64)"
+key="$(base64 -w 0 < "${decrypted_d}/event-secret")"
 postgres_password="$(jq -r '.data.POSTGRES_PASSWORD' < "${decrypted_d}/database-secret.json"  | base64 -d)"
 database_url="$(printf "postgres://cec:$postgres_password@postgres:5432/cec" | base64 -w 0)"
 group_id="$(base64 -w 0 < "${decrypted_d}/http-group-id")"

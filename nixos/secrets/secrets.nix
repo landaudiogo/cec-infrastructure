@@ -46,4 +46,5 @@ in
     "experiment-producer-stress.json.age".publicKeys = [ landaudiogo ];
     "init.sql.age".publicKeys = [ landaudiogo ];
     "http-group-id.age".publicKeys = [ landaudiogo ];
+    "event-secret.age".publicKeys = [ landaudiogo ];
 }
