@@ -423,7 +423,7 @@ dashboards:
                     "uid": "prometheus"
                   },
                   "editorMode": "code",
-                  "expr": "sum(round(delta(notifications_service_response_count_total{response_type!~\"Ok\"}[$__range]))) by (response_type)",
+                  "expr": "sum(round(increase(notifications_service_response_count_total{response_type!~\"Ok\"}[$__range]))) by (response_type)",
                   "instant": false,
                   "legendFormat": "{{response_type}}",
                   "range": true,
@@ -981,7 +981,7 @@ dashboards:
                     "uid": "prometheus"
                   },
                   "editorMode": "code",
-                  "expr": "sum(\n  round(\n    delta(\n      http_load_generator_response_count_total{endpoint=\"/temperature\", response_type=\"Ok\"}[$__range]\n    )\n  )\n)",
+                  "expr": "sum(\n  round(\n    increase(\n      http_load_generator_response_count_total{endpoint=\"/temperature\", response_type=\"Ok\"}[$__range]\n    )\n  )\n)",
                   "instant": false,
                   "legendFormat": "{{response_type}}",
                   "range": true,
@@ -1049,7 +1049,7 @@ dashboards:
                     "uid": "prometheus"
                   },
                   "editorMode": "code",
-                  "expr": "sum(\n  round(\n    delta(\n      http_load_generator_response_count_total{endpoint=\"/temperature/out-of-bounds\", response_type=\"Ok\"}[$__range]\n    )\n  )\n)",
+                  "expr": "sum(\n  round(\n    increase(\n      http_load_generator_response_count_total{endpoint=\"/temperature/out-of-bounds\", response_type=\"Ok\"}[$__range]\n    )\n  )\n)",
                   "instant": false,
                   "legendFormat": "{{response_type}}",
                   "range": true,
@@ -1119,7 +1119,7 @@ dashboards:
                     "uid": "prometheus"
                   },
                   "editorMode": "code",
-                  "expr": "sum(round(delta(http_load_generator_response_rtt_histogram_bucket[$__range]))) by (le)",
+                  "expr": "sum(round(increase(http_load_generator_response_rtt_histogram_bucket[$__range]))) by (le)",
                   "format": "heatmap",
                   "instant": false,
                   "legendFormat": "{{le}}",
@@ -1195,7 +1195,7 @@ dashboards:
                     "uid": "prometheus"
                   },
                   "editorMode": "code",
-                  "expr": "sum by (response_type) (\n  round(\n    delta(\n      http_load_generator_response_count_total{endpoint=\"/temperature\", response_type!~\"Ok\"}[$__range]\n    )\n  )\n)",
+                  "expr": "sum by (response_type) (\n  round(\n    increase(\n      http_load_generator_response_count_total{endpoint=\"/temperature\", response_type!~\"Ok\"}[$__range]\n    )\n  )\n)",
                   "instant": false,
                   "legendFormat": "{{response_type}}",
                   "range": true,
@@ -1270,7 +1270,7 @@ dashboards:
                     "uid": "prometheus"
                   },
                   "editorMode": "code",
-                  "expr": "sum by (response_type) (\n  round(\n    delta(\n      http_load_generator_response_count_total{endpoint=\"/temperature/out-of-bounds\", response_type!~\"Ok\"}[$__range]\n    )\n  )\n)",
+                  "expr": "sum by (response_type) (\n  round(\n    increase(\n      http_load_generator_response_count_total{endpoint=\"/temperature/out-of-bounds\", response_type!~\"Ok\"}[$__range]\n    )\n  )\n)",
                   "instant": false,
                   "legendFormat": "{{response_type}}",
                   "range": true,
@@ -1868,7 +1868,7 @@ dashboards:
                     "uid": "prometheus"
                   },
                   "editorMode": "code",
-                  "expr": "round(delta(notifications_service_response_count_total{group=\"$group\", response_type!~\"Ok\"}[$__range]))",
+                  "expr": "round(increase(notifications_service_response_count_total{group=\"$group\", response_type!~\"Ok\"}[$__range]))",
                   "instant": false,
                   "legendFormat": "{{response_type}}",
                   "range": true,
@@ -2408,7 +2408,7 @@ dashboards:
                     "uid": "prometheus"
                   },
                   "editorMode": "code",
-                  "expr": "round(delta(http_load_generator_response_count_total{host_name=\"${group}\", endpoint=\"/temperature\", response_type=\"Ok\"}[$__range]))",
+                  "expr": "round(increase(http_load_generator_response_count_total{host_name=\"${group}\", endpoint=\"/temperature\", response_type=\"Ok\"}[$__range]))",
                   "instant": false,
                   "legendFormat": "{{response_type}}",
                   "range": true,
@@ -2475,7 +2475,7 @@ dashboards:
                     "uid": "prometheus"
                   },
                   "editorMode": "code",
-                  "expr": "round(delta(http_load_generator_response_count_total{host_name=\"${group}\", endpoint=\"/temperature/out-of-bounds\", response_type=\"Ok\"}[$__range]))",
+                  "expr": "round(increase(http_load_generator_response_count_total{host_name=\"${group}\", endpoint=\"/temperature/out-of-bounds\", response_type=\"Ok\"}[$__range]))",
                   "instant": false,
                   "legendFormat": "{{response_type}}",
                   "range": true,
@@ -2544,7 +2544,7 @@ dashboards:
                     "uid": "prometheus"
                   },
                   "editorMode": "code",
-                  "expr": "sum(round(delta(http_load_generator_response_rtt_histogram_bucket{host_name=\"${group}\"}[$__range]))) by (le)",
+                  "expr": "sum(round(increase(http_load_generator_response_rtt_histogram_bucket{host_name=\"${group}\"}[$__range]))) by (le)",
                   "format": "heatmap",
                   "instant": false,
                   "legendFormat": "{{le}}",
@@ -2614,7 +2614,7 @@ dashboards:
                     "uid": "prometheus"
                   },
                   "editorMode": "code",
-                  "expr": "round(delta(http_load_generator_response_count_total{host_name=\"${group}\", endpoint=\"/temperature\", response_type!~\"Ok\"}[$__range]))",
+                  "expr": "round(increase(http_load_generator_response_count_total{host_name=\"${group}\", endpoint=\"/temperature\", response_type!~\"Ok\"}[$__range]))",
                   "instant": false,
                   "legendFormat": "{{response_type}}",
                   "range": true,
@@ -2683,7 +2683,7 @@ dashboards:
                     "uid": "prometheus"
                   },
                   "editorMode": "code",
-                  "expr": "round(delta(http_load_generator_response_count_total{host_name=\"${group}\", endpoint=\"/temperature/out-of-bounds\", response_type!~\"Ok\"}[$__range]))",
+                  "expr": "round(increase(http_load_generator_response_count_total{host_name=\"${group}\", endpoint=\"/temperature/out-of-bounds\", response_type!~\"Ok\"}[$__range]))",
                   "instant": false,
                   "legendFormat": "{{response_type}}",
                   "range": true,
@@ -3189,7 +3189,7 @@ dashboards:
                     "uid": "prometheus"
                   },
                   "editorMode": "code",
-                  "expr": "sum by (host_name, response_type) (round(delta(notifications_service_response_count_total{response_type!~\"Ok\"}[$__range])))",
+                  "expr": "sum by (host_name, response_type) (round(increase(notifications_service_response_count_total{response_type!~\"Ok\"}[$__range])))",
                   "instant": false,
                   "legendFormat": "{{host_name}} {{response_type}}",
                   "range": true,
@@ -3445,7 +3445,7 @@ dashboards:
                     "uid": "prometheus"
                   },
                   "editorMode": "code",
-                  "expr": "sum by (host_name) (\n  round(\n    delta(\n      http_load_generator_response_count_total{endpoint=\"/temperature\", response_type!~\"Ok\"}[$__range]\n    )\n  )\n)",
+                  "expr": "sum by (host_name) (\n  round(\n    increase(\n      http_load_generator_response_count_total{endpoint=\"/temperature\", response_type!~\"Ok\"}[$__range]\n    )\n  )\n)",
                   "instant": false,
                   "legendFormat": "{{host_name}}",
                   "range": true,
@@ -3521,7 +3521,7 @@ dashboards:
                     "uid": "prometheus"
                   },
                   "editorMode": "code",
-                  "expr": "sum by (host_name) (\n  round(\n    delta(\n      http_load_generator_response_count_total{endpoint=\"/temperature/out-of-bounds\", response_type!~\"Ok\"}[$__range]\n    )\n  )\n)",
+                  "expr": "sum by (host_name) (\n  round(\n    increase(\n      http_load_generator_response_count_total{endpoint=\"/temperature/out-of-bounds\", response_type!~\"Ok\"}[$__range]\n    )\n  )\n)",
                   "instant": false,
                   "legendFormat": "{{host_name}}",
                   "range": true,
@@ -3915,7 +3915,7 @@ dashboards:
                     "uid": "prometheus"
                   },
                   "editorMode": "code",
-                  "expr": "round(delta(notifications_service_response_count_total{group=\"${__user.login}\", response_type!~\"Ok\"}[$__range]))",
+                  "expr": "round(increase(notifications_service_response_count_total{group=\"${__user.login}\", response_type!~\"Ok\"}[$__range]))",
                   "instant": false,
                   "legendFormat": "{{response_type}}",
                   "range": true,
@@ -4456,7 +4456,7 @@ dashboards:
                     "uid": "prometheus"
                   },
                   "editorMode": "code",
-                  "expr": "round(delta(http_load_generator_response_count_total{host_name=\"${__user.login}\", endpoint=\"/temperature\", response_type=\"Ok\"}[$__range]))",
+                  "expr": "round(increase(http_load_generator_response_count_total{host_name=\"${__user.login}\", endpoint=\"/temperature\", response_type=\"Ok\"}[$__range]))",
                   "instant": false,
                   "legendFormat": "{{response_type}}",
                   "range": true,
@@ -4524,7 +4524,7 @@ dashboards:
                     "uid": "prometheus"
                   },
                   "editorMode": "code",
-                  "expr": "round(delta(http_load_generator_response_count_total{host_name=\"${__user.login}\", endpoint=\"/temperature/out-of-bounds\", response_type=\"Ok\"}[$__range]))",
+                  "expr": "round(increase(http_load_generator_response_count_total{host_name=\"${__user.login}\", endpoint=\"/temperature/out-of-bounds\", response_type=\"Ok\"}[$__range]))",
                   "instant": false,
                   "legendFormat": "{{response_type}}",
                   "range": true,
@@ -4594,7 +4594,7 @@ dashboards:
                     "uid": "prometheus"
                   },
                   "editorMode": "code",
-                  "expr": "sum(round(delta(http_load_generator_response_rtt_histogram_bucket{host_name=\"${__user.login}\"}[$__range]))) by (le)",
+                  "expr": "sum(round(increase(http_load_generator_response_rtt_histogram_bucket{host_name=\"${__user.login}\"}[$__range]))) by (le)",
                   "format": "heatmap",
                   "instant": false,
                   "legendFormat": "{{le}}",
@@ -4664,7 +4664,7 @@ dashboards:
                     "uid": "prometheus"
                   },
                   "editorMode": "code",
-                  "expr": "round(delta(http_load_generator_response_count_total{host_name=\"${__user.login}\", endpoint=\"/temperature\", response_type!~\"Ok\"}[$__range]))",
+                  "expr": "round(increase(http_load_generator_response_count_total{host_name=\"${__user.login}\", endpoint=\"/temperature\", response_type!~\"Ok\"}[$__range]))",
                   "instant": false,
                   "legendFormat": "{{response_type}}",
                   "range": true,
@@ -4733,7 +4733,7 @@ dashboards:
                     "uid": "prometheus"
                   },
                   "editorMode": "code",
-                  "expr": "round(delta(http_load_generator_response_count_total{host_name=\"${__user.login}\", endpoint=\"/temperature/out-of-bounds\", response_type!~\"Ok\"}[$__range]))",
+                  "expr": "round(increase(http_load_generator_response_count_total{host_name=\"${__user.login}\", endpoint=\"/temperature/out-of-bounds\", response_type!~\"Ok\"}[$__range]))",
                   "instant": false,
                   "legendFormat": "{{response_type}}",
                   "range": true,
