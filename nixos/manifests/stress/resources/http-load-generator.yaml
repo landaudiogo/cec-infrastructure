@@ -1,42 +1,3 @@
-  # http-load-generator:
-  #   image: dclandau/cec-http-load-generator
-  #   ports:
-  #     - "3002:3002"
-  #   command: 
-  #     - --brokers 
-  #     - "${BROKERS}"
-  #     - --topic 
-  #     - ${TOPIC_DOCUMENT}
-  #     - --group-id 
-  #     - "${HTTP_CONSUMER_GROUP}"
-  #     - --consumer-wait-before-send 
-  #     - "${HTTP_CONSUMER_WAIT_BEFORE_SEND}"
-  #     - --hosts-file
-  #     - hosts.json
-  #     - --min-batch-size - "${HTTP_MIN_BATCH_SIZE}"
-  #     - --max-batch-size
-  #     - "${HTTP_MAX_BATCH_SIZE}"
-  #     - --num-generations
-  #     - "${HTTP_NUM_GENERATIONS}" 
-  #     - --requestor-lag 
-  #     - "5" 
-  #     - --requestor-retries
-  #     - "${HTTP_RETRIES}" 
-  #     - --requestor-max-in-flight
-  #     - "${HTTP_MAX_IN_FLIGHT}" 
-  #     - --stable-rate-duration
-  #     - "60"
-  #   extra_hosts: 
-  #     - host.docker.internal:host-gateway
-  #   environment: 
-  #     - SERVICE_ENVIRONMENT=${SERVICE_ENVIRONMENT}
-  #   logging:
-  #     driver: "json-file"
-  #     options:
-  #       max-size: "100m"
-  #       max-file: 5
-  #   volumes:
-  #     - ./auth:/app/auth
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -221,17 +182,17 @@ spec:
         - name: GROUP_ID
           valueFrom:
             secretKeyRef:
-              name: demo-consistency
+              name: demo-stress
               key: GROUP_ID
         - name: MIN_BATCH_SIZE
           valueFrom:
             secretKeyRef:
-              name: demo-consistency
+              name: demo-stress
               key: MIN_BATCH_SIZE
         - name: MAX_BATCH_SIZE
           valueFrom:
             secretKeyRef:
-              name: demo-consistency
+              name: demo-stress
               key: MAX_BATCH_SIZE
       volumeMounts:
         - name: credentials

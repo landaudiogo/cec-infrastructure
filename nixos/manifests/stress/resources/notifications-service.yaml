@@ -1,0 +1,139 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: root-certificate
+data:
+  ca.crt: |
+    -----BEGIN CERTIFICATE-----
+    MIIDdDCCAlygAwIBAgIUfBEbsKx0qQKRfvojrME/UyVuvz0wDQYJKoZIhvcNAQEL
+    BQAwUjEXMBUGA1UEBxMOYXV0by1nZW5lcmF0ZWQxDjAMBgNVBAoTBU5peE9TMScw
+    JQYDVQQLEx5zZXJ2aWNlcy5rdWJlcm5ldGVzLnBraS5jYVNwZWMwHhcNMjYwOTA2
+    MTAxMTAwWhcNMzEwOTA1MTAxMTAwWjBSMRcwFQYDVQQHEw5hdXRvLWdlbmVyYXRl
+    ZDEOMAwGA1UEChMFTml4T1MxJzAlBgNVBAsTHnNlcnZpY2VzLmt1YmVybmV0ZXMu
+    cGtpLmNhU3BlYzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKa2DtO4
+    Bw6o+dNXhufiCynunqkj31DckldKXqJXrEbTds9Q7nFxJBUDsGuWrXwZbC9RLuaD
+    JoV066LHJDmTe9nODdeqGyd4akBVYaNtym1eFkxcXvH3NAFNJhcRnXzrz0mCuB4W
+    ROjl7/XKTXziRF02iD8by7minv2Sfjv5euk/jfCAhBxtXEfbhUpX1snLA1ghLeGC
+    7XBoh+2kE167FlVcJi+IBL28mMUDYsKFGxrAkJ+3aNHcrVjFWQfUUNy6Y1IDXvFA
+    LpvwG2sn9ZehZpvOJWX0Zkyzjai8GsEkASv0u/kj++JBX5zAMhoYhEC6+qD4HZUX
+    c2dkfZCgIUksmm0CAwEAAaNCMEAwDgYDVR0PAQH/BAQDAgEGMA8GA1UdEwEB/wQF
+    MAMBAf8wHQYDVR0OBBYEFNHVejQulnyIsfntqm0PTTPhiyNMMA0GCSqGSIb3DQEB
+    CwUAA4IBAQBs6EdYyUBef7nL4sChnS+8oU4WGn+gmUYyvCWKhRKhzZGCG2FxcyXL
+    iYW5Kx/C4cLX8e0WAjclDQjXzf1DeXkxBBmGuWTL2/PcmjwKnVPCjgY0vJTWKZgW
+    hWiiyalxtWLRjMz8v35XjAEnh3vd7hIKa4oai8zKa5tywMRZ9N2UXFxAb7L5CIDc
+    zskrwq6QHPIAwoJY3LwsJTZWoKMPzdkXuAHM9yXyAth/nTflweqAwpJwjEX/WkbL
+    fw30vsTRrCOc93hlch6sAB8HIWDNpCBJ15mQlSTR/w+V9NymwJbZGAedDQg5oTRT
+    FRR0HFdJeln/NVaQEGu4rHKNeYnDH7UL
+    -----END CERTIFICATE-----
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notifications-service
+spec:
+  type: ClusterIP
+  selector:
+    app: notifications-service
+  ports:
+    - port: 3000
+      targetPort: 3000
+      name: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notifications-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notifications-service
+  template:
+    metadata:
+      labels:
+        app: notifications-service
+    spec:
+      containers:
+        - name: notifications-service
+          image: dclandau/cec-notifications-service:b738c7c
+          env:
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: demo-stress
+                  key: SECRET_KEY
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: demo-stress
+                  key: DATABASE_URL
+            - name: RSA_PUBLIC_KEY
+              value: /etc/secrets/ca.crt
+            - name: SWAGGER_CONNECTION
+              value: https://notifications.cec.dlandau.nl/api
+          volumeMounts:
+            - name: root-certificate
+              mountPath: /etc/secrets
+              readOnly: true
+      volumes:
+        - name: root-certificate
+          configMap:
+            name: root-certificate
+            items:
+              - key: ca.crt
+                path: ca.crt
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: notifications-service-redirect
+spec:
+  parentRefs:
+    - name: eg
+      sectionName: http
+  hostnames:
+    - "notifications.cec.dlandau.nl"
+  rules:
+    # Let ACME HTTP-01 challenges through untouched
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /.well-known/acme-challenge/
+      backendRefs:
+        - group: ""
+          kind: Service
+          name: notifications-service
+          port: 3000
+    # Redirect everything else to HTTPS
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            statusCode: 301
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: notifications-service
+spec:
+  parentRefs:
+    - name: eg
+      sectionName: https.notifications.cec.dlandau.nl
+  hostnames:
+    - "notifications.cec.dlandau.nl"
+  rules:
+    - backendRefs:
+        - group: ""
+          kind: Service
+          name: notifications-service
+          port: 3000
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
