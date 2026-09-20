@@ -158,7 +158,7 @@ spec:
           readOnly: true
   containers:
     - name: http-load-generator
-      image: dclandau/cec-http-load-generator:d1dee71
+      image: dclandau/cec-http-load-generator:f2941da
       args:
         - --brokers
         - "kafka-1:9094,kafka-2:9094,kafka-3:9094"
@@ -179,6 +179,8 @@ spec:
         - --stable-rate-duration
         - "60"
       env:
+        - name: RUST_LOG
+          value: info
         - name: GROUP_ID
           valueFrom:
             secretKeyRef:
