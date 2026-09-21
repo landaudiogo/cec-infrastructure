@@ -424,9 +424,9 @@ dashboards:
                   },
                   "editorMode": "code",
                   "expr": "sum(round(increase(notifications_service_response_count_total{response_type!~\"Ok\"}[$__range]))) by (response_type)",
-                  "instant": false,
+                  "instant": true,
                   "legendFormat": "{{response_type}}",
-                  "range": true,
+                  "range": false,
                   "refId": "A"
                 }
               ],
@@ -1196,9 +1196,9 @@ dashboards:
                   },
                   "editorMode": "code",
                   "expr": "sum by (response_type) (\n  round(\n    increase(\n      http_load_generator_response_count_total{endpoint=\"/temperature\", response_type!~\"Ok\"}[$__range]\n    )\n  )\n)",
-                  "instant": false,
+                  "instant": true,
                   "legendFormat": "{{response_type}}",
-                  "range": true,
+                  "range": false,
                   "refId": "A"
                 }
               ],
@@ -1271,9 +1271,9 @@ dashboards:
                   },
                   "editorMode": "code",
                   "expr": "sum by (response_type) (\n  round(\n    increase(\n      http_load_generator_response_count_total{endpoint=\"/temperature/out-of-bounds\", response_type!~\"Ok\"}[$__range]\n    )\n  )\n)",
-                  "instant": false,
+                  "instant": true,
                   "legendFormat": "{{response_type}}",
-                  "range": true,
+                  "range": false,
                   "refId": "A"
                 }
               ],
@@ -1869,9 +1869,9 @@ dashboards:
                   },
                   "editorMode": "code",
                   "expr": "round(increase(notifications_service_response_count_total{group=\"$group\", response_type!~\"Ok\"}[$__range]))",
-                  "instant": false,
+                  "instant": true,
                   "legendFormat": "{{response_type}}",
-                  "range": true,
+                  "range": false,
                   "refId": "A"
                 }
               ],
@@ -2615,9 +2615,9 @@ dashboards:
                   },
                   "editorMode": "code",
                   "expr": "round(increase(http_load_generator_response_count_total{host_name=\"${group}\", endpoint=\"/temperature\", response_type!~\"Ok\"}[$__range]))",
-                  "instant": false,
+                  "instant": true,
                   "legendFormat": "{{response_type}}",
-                  "range": true,
+                  "range": false,
                   "refId": "A"
                 }
               ],
@@ -2684,9 +2684,9 @@ dashboards:
                   },
                   "editorMode": "code",
                   "expr": "round(increase(http_load_generator_response_count_total{host_name=\"${group}\", endpoint=\"/temperature/out-of-bounds\", response_type!~\"Ok\"}[$__range]))",
-                  "instant": false,
+                  "instant": true,
                   "legendFormat": "{{response_type}}",
-                  "range": true,
+                  "range": false,
                   "refId": "A"
                 }
               ],
@@ -3190,9 +3190,9 @@ dashboards:
                   },
                   "editorMode": "code",
                   "expr": "sum by (host_name, response_type) (round(increase(notifications_service_response_count_total{response_type!~\"Ok\"}[$__range])))",
-                  "instant": false,
+                  "instant": true,
                   "legendFormat": "{{host_name}} {{response_type}}",
-                  "range": true,
+                  "range": false,
                   "refId": "A"
                 }
               ],
@@ -3446,9 +3446,9 @@ dashboards:
                   },
                   "editorMode": "code",
                   "expr": "sum by (host_name) (\n  round(\n    increase(\n      http_load_generator_response_count_total{endpoint=\"/temperature\", response_type!~\"Ok\"}[$__range]\n    )\n  )\n)",
-                  "instant": false,
+                  "instant": true,
                   "legendFormat": "{{host_name}}",
-                  "range": true,
+                  "range": false,
                   "refId": "A"
                 }
               ],
@@ -3522,9 +3522,9 @@ dashboards:
                   },
                   "editorMode": "code",
                   "expr": "sum by (host_name) (\n  round(\n    increase(\n      http_load_generator_response_count_total{endpoint=\"/temperature/out-of-bounds\", response_type!~\"Ok\"}[$__range]\n    )\n  )\n)",
-                  "instant": false,
+                  "instant": true,
                   "legendFormat": "{{host_name}}",
-                  "range": true,
+                  "range": false,
                   "refId": "A"
                 }
               ],
@@ -3916,9 +3916,9 @@ dashboards:
                   },
                   "editorMode": "code",
                   "expr": "round(increase(notifications_service_response_count_total{group=\"${__user.login}\", response_type!~\"Ok\"}[$__range]))",
-                  "instant": false,
+                  "instant": true,
                   "legendFormat": "{{response_type}}",
-                  "range": true,
+                  "range": false,
                   "refId": "A"
                 }
               ],
@@ -4665,9 +4665,9 @@ dashboards:
                   },
                   "editorMode": "code",
                   "expr": "round(increase(http_load_generator_response_count_total{host_name=\"${__user.login}\", endpoint=\"/temperature\", response_type!~\"Ok\"}[$__range]))",
-                  "instant": false,
+                  "instant": true,
                   "legendFormat": "{{response_type}}",
-                  "range": true,
+                  "range": false,
                   "refId": "A"
                 }
               ],
@@ -4734,9 +4734,9 @@ dashboards:
                   },
                   "editorMode": "code",
                   "expr": "round(increase(http_load_generator_response_count_total{host_name=\"${__user.login}\", endpoint=\"/temperature/out-of-bounds\", response_type!~\"Ok\"}[$__range]))",
-                  "instant": false,
+                  "instant": true,
                   "legendFormat": "{{response_type}}",
-                  "range": true,
+                  "range": false,
                   "refId": "A"
                 }
               ],
