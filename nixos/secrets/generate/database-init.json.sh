@@ -11,13 +11,15 @@ decrypted_d="${script_d}/../.decrypted"
 
 keys=(
     "init.sql"
+    "database-secret.json"
 )
 
 for key in "${keys[@]}"; do
     agenix -d "$key.age" > "${decrypted_d}/$key"
 done
 
-sql="$(base64 -w 0 < "${decrypted_d}/init.sql")"
+grafanareader_password="$(jq -r '.data.GRAFANAREADER_PASSWORD' < "${decrypted_d}/database-secret.json" | base64 -d)"
+sql="$(sed -e "s/{{GRAFANAREADER_PASSWORD}}/${grafanareader_password}/" < "${decrypted_d}/init.sql" | base64 -w 0)"
 
 echo '{
     "apiVersion": "v1",

@@ -7,10 +7,10 @@ admin:
   passwordKey: admin-password
 
 envValueFrom:
-  POSTGRES_PASSWORD:
+  GRAFANAREADER_PASSWORD:
     secretKeyRef:
       name: database
-      key: POSTGRES_PASSWORD
+      key: GRAFANAREADER_PASSWORD
 
 grafana.ini:
   plugins:
@@ -32,9 +32,9 @@ datasources:
         access: proxy
         url: postgres:5432
         database: cec 
-        user: cec
+        user: grafanareader
         secureJsonData:
-          password: ${POSTGRES_PASSWORD}
+          password: ${GRAFANAREADER_PASSWORD}
         jsonData:
           sslmode: disable
 
