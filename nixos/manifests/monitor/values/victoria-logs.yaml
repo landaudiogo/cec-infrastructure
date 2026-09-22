@@ -1,0 +1,13 @@
+# VictoriaLogs server
+server:
+
+  # Time-based retention
+  retentionPeriod: 1d
+
+  # Or disk-based retention
+  # retentionDiskSpaceUsage: 5GB
+
+  # Storage size for the ingested logs
+  persistentVolume:
+    storageClassName: local-path
+    size: 5Gi
