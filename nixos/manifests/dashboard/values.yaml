@@ -16,6 +16,9 @@ grafana.ini:
   plugins:
     preinstall_auto_update: false
 
+plugins:
+  - victoriametrics-logs-datasource
+
 datasources:
   datasources.yaml:
     apiVersion: 1
@@ -37,6 +40,12 @@ datasources:
           password: ${GRAFANAREADER_PASSWORD}
         jsonData:
           sslmode: disable
+
+      - name: victorialogs
+        uid: victorialogs
+        type: victoriametrics-logs-datasource
+        access: proxy
+        url: http://victoria-logs-victoria-logs-single-server.monitoring:9428
 
 dashboardProviders:
   dashboardproviders.yaml:
@@ -3552,1419 +3561,1969 @@ dashboards:
     group-personal:
       json: |
         {
-          "__elements": {},
-          "__requires": [
-            {
-              "type": "panel",
-              "id": "barchart",
-              "name": "Bar chart",
-              "version": ""
+          "apiVersion": "dashboard.grafana.app/v2",
+          "kind": "Dashboard",
+          "metadata": {
+            "name": "e9c98dec-a25f-4a89-83f9-3b009bca4780",
+            "namespace": "default",
+            "uid": "87c209b3-d2a4-4e60-8ed0-6d0faf8e6f0e",
+            "resourceVersion": "1790085222960980",
+            "generation": 1,
+            "creationTimestamp": "2026-09-22T13:53:42Z",
+            "labels": {
+              "grafana.app/deprecatedInternalID": "3718495077285888"
             },
-            {
-              "type": "panel",
-              "id": "bargauge",
-              "name": "Bar gauge",
-              "version": ""
-            },
-            {
-              "type": "grafana",
-              "id": "grafana",
-              "name": "Grafana",
-              "version": "11.2.0"
-            },
-            {
-              "type": "datasource",
-              "id": "grafana-postgresql-datasource",
-              "name": "PostgreSQL",
-              "version": "1.0.0"
-            },
-            {
-              "type": "datasource",
-              "id": "prometheus",
-              "name": "Prometheus",
-              "version": "1.0.0"
-            },
-            {
-              "type": "panel",
-              "id": "stat",
-              "name": "Stat",
-              "version": ""
-            },
-            {
-              "type": "panel",
-              "id": "timeseries",
-              "name": "Time series",
-              "version": ""
+            "annotations": {
+              "grafana.app/createdBy": "access-policy:service",
+              "grafana.app/folder": "group",
+              "grafana.app/managedBy": "classic-file-provisioning",
+              "grafana.app/managerId": "default",
+              "grafana.app/sourceChecksum": "ac61f222d1b86782612e93383ba840a1",
+              "grafana.app/sourcePath": "/var/lib/grafana/dashboards/default/group-personal.json",
+              "grafana.app/sourceTimestamp": "1790085199000",
+              "grafana.app/folderTitle": "group",
+              "grafana.app/folderUrl": "/dashboards/f/group/group"
             }
-          ],
-          "annotations": {
-            "list": [
-              {
-                "builtIn": 1,
-                "datasource": {
-                  "type": "grafana",
-                  "uid": "-- Grafana --"
-                },
-                "enable": true,
-                "hide": true,
-                "iconColor": "rgba(0, 211, 255, 1)",
-                "name": "Annotations & Alerts",
-                "type": "dashboard"
-              }
-            ]
           },
-          "editable": true,
-          "fiscalYearStartMonth": 0,
-          "graphTooltip": 0,
-          "id": null,
-          "links": [],
-          "liveNow": false,
-          "panels": [
-            {
-              "collapsed": false,
-              "gridPos": {
-                "h": 1,
-                "w": 24,
-                "x": 0,
-                "y": 0
-              },
-              "id": 11,
-              "panels": [],
-              "title": "System Load",
-              "type": "row"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "fieldConfig": {
-                "defaults": {
-                  "color": {
-                    "mode": "palette-classic"
-                  },
-                  "custom": {
-                    "axisBorderShow": false,
-                    "axisCenteredZero": false,
-                    "axisColorMode": "text",
-                    "axisLabel": "",
-                    "axisPlacement": "auto",
-                    "axisSoftMin": 0,
-                    "barAlignment": 0,
-                    "barWidthFactor": 0.6,
-                    "drawStyle": "line",
-                    "fillOpacity": 0,
-                    "gradientMode": "none",
-                    "hideFrom": {
-                      "legend": false,
-                      "tooltip": false,
-                      "viz": false
+          "spec": {
+            "annotations": [
+              {
+                "kind": "AnnotationQuery",
+                "spec": {
+                  "builtIn": true,
+                  "enable": true,
+                  "hide": true,
+                  "iconColor": "rgba(0, 211, 255, 1)",
+                  "name": "Annotations & Alerts",
+                  "query": {
+                    "datasource": {
+                      "name": "-- Grafana --"
                     },
-                    "insertNulls": false,
-                    "lineInterpolation": "linear",
-                    "lineWidth": 1,
-                    "pointSize": 5,
-                    "scaleDistribution": {
-                      "type": "linear"
-                    },
-                    "showPoints": "auto",
-                    "spanNulls": false,
-                    "stacking": {
-                      "group": "A",
-                      "mode": "none"
-                    },
-                    "thresholdsStyle": {
-                      "mode": "off"
+                    "group": "grafana",
+                    "kind": "DataQuery",
+                    "spec": {},
+                    "version": "v0"
+                  }
+                }
+              }
+            ],
+            "cursorSync": "Off",
+            "editable": true,
+            "elements": {
+              "panel-1": {
+                "kind": "Panel",
+                "spec": {
+                  "data": {
+                    "kind": "QueryGroup",
+                    "spec": {
+                      "queries": [
+                        {
+                          "kind": "PanelQuery",
+                          "spec": {
+                            "hidden": false,
+                            "query": {
+                              "datasource": {
+                                "name": "prometheus"
+                              },
+                              "group": "prometheus",
+                              "kind": "DataQuery",
+                              "spec": {
+                                "editorMode": "code",
+                                "expr": "sum(rate(experiment_producer_event_count_total{topic=\"experiment\"}[5s]))",
+                                "instant": false,
+                                "legendFormat": "events",
+                                "range": true
+                              },
+                              "version": "v0"
+                            },
+                            "refId": "A"
+                          }
+                        }
+                      ],
+                      "queryOptions": {
+                        "interval": "5s"
+                      },
+                      "transformations": []
                     }
                   },
-                  "mappings": [],
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "color": "green",
-                        "value": null
-                      },
-                      {
-                        "color": "red",
-                        "value": 80
-                      }
-                    ]
-                  }
-                },
-                "overrides": []
-              },
-              "gridPos": {
-                "h": 8,
-                "w": 12,
-                "x": 0,
-                "y": 1
-              },
-              "id": 1,
-              "interval": "5s",
-              "options": {
-                "legend": {
-                  "calcs": [],
-                  "displayMode": "list",
-                  "placement": "bottom",
-                  "showLegend": true
-                },
-                "tooltip": {
-                  "mode": "single",
-                  "sort": "none"
-                }
-              },
-              "targets": [
-                {
-                  "datasource": {
-                    "type": "prometheus",
-                    "uid": "prometheus"
-                  },
-                  "editorMode": "code",
-                  "expr": "sum(rate(experiment_producer_event_count_total{topic=\"experiment\"}[5s]))",
-                  "instant": false,
-                  "legendFormat": "events",
-                  "range": true,
-                  "refId": "A"
-                }
-              ],
-              "title": "Event Load",
-              "type": "timeseries"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "fieldConfig": {
-                "defaults": {
-                  "color": {
-                    "mode": "palette-classic"
-                  },
-                  "custom": {
-                    "axisBorderShow": false,
-                    "axisCenteredZero": false,
-                    "axisColorMode": "text",
-                    "axisLabel": "",
-                    "axisPlacement": "auto",
-                    "axisSoftMin": 0,
-                    "barAlignment": 0,
-                    "barWidthFactor": 0.6,
-                    "drawStyle": "line",
-                    "fillOpacity": 0,
-                    "gradientMode": "none",
-                    "hideFrom": {
-                      "legend": false,
-                      "tooltip": false,
-                      "viz": false
-                    },
-                    "insertNulls": false,
-                    "lineInterpolation": "linear",
-                    "lineWidth": 1,
-                    "pointSize": 5,
-                    "scaleDistribution": {
-                      "type": "linear"
-                    },
-                    "showPoints": "auto",
-                    "spanNulls": false,
-                    "stacking": {
-                      "group": "A",
-                      "mode": "none"
-                    },
-                    "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  },
-                  "mappings": [],
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "color": "green",
-                        "value": null
-                      },
-                      {
-                        "color": "red",
-                        "value": 80
-                      }
-                    ]
-                  }
-                },
-                "overrides": []
-              },
-              "gridPos": {
-                "h": 8,
-                "w": 12,
-                "x": 12,
-                "y": 1
-              },
-              "id": 2,
-              "interval": "5s",
-              "options": {
-                "legend": {
-                  "calcs": [],
-                  "displayMode": "list",
-                  "placement": "bottom",
-                  "showLegend": true
-                },
-                "tooltip": {
-                  "mode": "single",
-                  "sort": "none"
-                }
-              },
-              "targets": [
-                {
-                  "datasource": {
-                    "type": "prometheus",
-                    "uid": "prometheus"
-                  },
-                  "editorMode": "code",
-                  "expr": "http_load_generator_target_request_rate{host_name=\"${__user.login}\"}",
-                  "hide": false,
-                  "instant": false,
-                  "legendFormat": "target",
-                  "range": true,
-                  "refId": "B"
-                },
-                {
-                  "datasource": {
-                    "type": "prometheus",
-                    "uid": "prometheus"
-                  },
-                  "editorMode": "code",
-                  "expr": "http_load_generator_effective_request_rate{host_name=\"${__user.login}\"}",
-                  "instant": false,
-                  "legendFormat": "real",
-                  "range": true,
-                  "refId": "A"
-                }
-              ],
-              "title": "HTTP Load",
-              "type": "timeseries"
-            },
-            {
-              "collapsed": false,
-              "gridPos": {
-                "h": 1,
-                "w": 24,
-                "x": 0,
-                "y": 9
-              },
-              "id": 12,
-              "panels": [],
-              "title": "Notification Statistics",
-              "type": "row"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "fieldConfig": {
-                "defaults": {
-                  "color": {
-                    "mode": "thresholds"
-                  },
-                  "mappings": [],
-                  "noValue": "0",
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "color": "green",
-                        "value": null
-                      },
-                      {
-                        "color": "red",
-                        "value": 1
-                      }
-                    ]
-                  }
-                },
-                "overrides": []
-              },
-              "gridPos": {
-                "h": 10,
-                "w": 4,
-                "x": 0,
-                "y": 10
-              },
-              "id": 8,
-              "options": {
-                "colorMode": "value",
-                "graphMode": "none",
-                "justifyMode": "auto",
-                "orientation": "horizontal",
-                "percentChangeColorMode": "standard",
-                "reduceOptions": {
-                  "calcs": [
-                    "lastNotNull"
-                  ],
-                  "fields": "",
-                  "values": false
-                },
-                "showPercentChange": false,
-                "textMode": "value_and_name",
-                "wideLayout": true
-              },
-              "pluginVersion": "11.2.0",
-              "targets": [
-                {
-                  "datasource": {
-                    "type": "prometheus",
-                    "uid": "prometheus"
-                  },
-                  "editorMode": "code",
-                  "expr": "round(increase(notifications_service_response_count_total{group=\"${__user.login}\", response_type!~\"Ok\"}[$__range]))",
-                  "instant": true,
-                  "legendFormat": "{{response_type}}",
-                  "range": false,
-                  "refId": "A"
-                }
-              ],
-              "title": "Notification Endpoint (Error)",
-              "type": "stat"
-            },
-            {
-              "datasource": {
-                "type": "grafana-postgresql-datasource",
-                "uid": "postgres"
-              },
-              "fieldConfig": {
-                "defaults": {
-                  "mappings": [],
-                  "noValue": "0",
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "color": "transparent",
-                        "value": null
-                      }
-                    ]
-                  },
-                  "unit": "short"
-                },
-                "overrides": []
-              },
-              "gridPos": {
-                "h": 5,
-                "w": 3,
-                "x": 5,
-                "y": 10
-              },
-              "id": 13,
-              "options": {
-                "colorMode": "none",
-                "graphMode": "none",
-                "justifyMode": "auto",
-                "orientation": "auto",
-                "percentChangeColorMode": "standard",
-                "reduceOptions": {
-                  "calcs": [
-                    "lastNotNull"
-                  ],
-                  "fields": "",
-                  "values": false
-                },
-                "showPercentChange": false,
-                "textMode": "auto",
-                "wideLayout": true
-              },
-              "pluginVersion": "11.2.0",
-              "targets": [
-                {
-                  "datasource": {
-                    "type": "grafana-postgresql-datasource",
-                    "uid": "postgres"
-                  },
-                  "editorMode": "code",
-                  "format": "table",
-                  "rawQuery": true,
-                  "rawSql": "SELECT \n  COUNT(*) \nFROM \n  demo.notification_ground_truth\nWHERE \n  insert_timestamp BETWEEN $__timeFrom() AND $__timeTo()",
-                  "refId": "A",
-                  "sql": {
-                    "columns": [
-                      {
-                        "parameters": [],
-                        "type": "function"
-                      }
-                    ],
-                    "groupBy": [
-                      {
-                        "property": {
-                          "type": "string"
+                  "description": "",
+                  "id": 1,
+                  "links": [],
+                  "title": "Event Load",
+                  "vizConfig": {
+                    "group": "timeseries",
+                    "kind": "VizConfig",
+                    "spec": {
+                      "fieldConfig": {
+                        "defaults": {
+                          "color": {
+                            "mode": "palette-classic"
+                          },
+                          "custom": {
+                            "axisBorderShow": false,
+                            "axisCenteredZero": false,
+                            "axisColorMode": "text",
+                            "axisLabel": "",
+                            "axisPlacement": "auto",
+                            "axisSoftMin": 0,
+                            "barAlignment": 0,
+                            "barWidthFactor": 0.6,
+                            "drawStyle": "line",
+                            "fillOpacity": 0,
+                            "gradientMode": "none",
+                            "hideFrom": {
+                              "legend": false,
+                              "tooltip": false,
+                              "viz": false
+                            },
+                            "insertNulls": false,
+                            "lineInterpolation": "linear",
+                            "lineWidth": 1,
+                            "pointSize": 5,
+                            "scaleDistribution": {
+                              "type": "linear"
+                            },
+                            "showPoints": "auto",
+                            "showValues": false,
+                            "spanNulls": false,
+                            "stacking": {
+                              "group": "A",
+                              "mode": "none"
+                            },
+                            "thresholdsStyle": {
+                              "mode": "off"
+                            }
+                          },
+                          "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                              {
+                                "color": "green",
+                                "value": 0
+                              },
+                              {
+                                "color": "red",
+                                "value": 80
+                              }
+                            ]
+                          }
                         },
-                        "type": "groupBy"
-                      }
-                    ],
-                    "limit": 50
-                  }
-                }
-              ],
-              "title": "# Required Notifications",
-              "type": "stat"
-            },
-            {
-              "datasource": {
-                "type": "grafana-postgresql-datasource",
-                "uid": "postgres"
-              },
-              "fieldConfig": {
-                "defaults": {
-                  "color": {
-                    "mode": "thresholds"
-                  },
-                  "mappings": [],
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "color": "green",
-                        "value": null
+                        "overrides": []
                       },
-                      {
-                        "color": "red",
-                        "value": 1
-                      }
-                    ]
-                  }
-                },
-                "overrides": []
-              },
-              "gridPos": {
-                "h": 5,
-                "w": 3,
-                "x": 8,
-                "y": 10
-              },
-              "id": 14,
-              "options": {
-                "colorMode": "value",
-                "graphMode": "none",
-                "justifyMode": "auto",
-                "orientation": "auto",
-                "percentChangeColorMode": "standard",
-                "reduceOptions": {
-                  "calcs": [
-                    "lastNotNull"
-                  ],
-                  "fields": "",
-                  "values": false
-                },
-                "showPercentChange": false,
-                "textMode": "auto",
-                "wideLayout": true
-              },
-              "pluginVersion": "11.2.0",
-              "targets": [
-                {
-                  "datasource": {
-                    "type": "grafana-postgresql-datasource",
-                    "uid": "postgres"
-                  },
-                  "editorMode": "code",
-                  "format": "table",
-                  "rawQuery": true,
-                  "rawSql": "WITH\n\tnotified AS (\n\t\tSELECT \n\t\t  experiment_id, measurement_id\n\t\tFROM \n\t\t  demo.notification\n\t\tWHERE\n\t\t  group_id = '${__user.login}'\n  ),\n  ground_truth AS (\n    SELECT \n      experiment_id, measurement_id, insert_timestamp\n    FROM \n      demo.notification_ground_truth\n  )\nSELECT \n  COUNT(*)\nFROM \n  ground_truth gt\nLEFT JOIN\n\tnotified n\nON gt.measurement_id = n.measurement_id AND gt.experiment_id = n.experiment_id\nWHERE \n\tn.measurement_id IS NULL\n\tAND gt.insert_timestamp BETWEEN $__timeFrom() AND $__timeTo() ",
-                  "refId": "A",
-                  "sql": {
-                    "columns": [
-                      {
-                        "parameters": [],
-                        "type": "function"
-                      }
-                    ],
-                    "groupBy": [
-                      {
-                        "property": {
-                          "type": "string"
-                        },
-                        "type": "groupBy"
-                      }
-                    ],
-                    "limit": 50
-                  }
-                }
-              ],
-              "title": "# Notifications Missing",
-              "type": "stat"
-            },
-            {
-              "datasource": {
-                "type": "grafana-postgresql-datasource",
-                "uid": "postgres"
-              },
-              "fieldConfig": {
-                "defaults": {
-                  "color": {
-                    "mode": "thresholds"
-                  },
-                  "custom": {
-                    "axisBorderShow": false,
-                    "axisCenteredZero": false,
-                    "axisColorMode": "text",
-                    "axisLabel": "",
-                    "axisPlacement": "auto",
-                    "fillOpacity": 49,
-                    "gradientMode": "hue",
-                    "hideFrom": {
-                      "legend": false,
-                      "tooltip": false,
-                      "viz": false
-                    },
-                    "lineWidth": 1,
-                    "scaleDistribution": {
-                      "type": "linear"
-                    },
-                    "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  },
-                  "mappings": [
-                    {
                       "options": {
-                        "[10; +∞[": {
-                          "color": "red",
-                          "index": 0
+                        "legend": {
+                          "calcs": [],
+                          "displayMode": "list",
+                          "placement": "bottom",
+                          "showLegend": true
+                        },
+                        "tooltip": {
+                          "hideZeros": false,
+                          "mode": "single",
+                          "sort": "none"
+                        }
+                      }
+                    },
+                    "version": "13.2.1"
+                  }
+                }
+              },
+              "panel-13": {
+                "kind": "Panel",
+                "spec": {
+                  "data": {
+                    "kind": "QueryGroup",
+                    "spec": {
+                      "queries": [
+                        {
+                          "kind": "PanelQuery",
+                          "spec": {
+                            "hidden": false,
+                            "query": {
+                              "datasource": {
+                                "name": "postgres"
+                              },
+                              "group": "grafana-postgresql-datasource",
+                              "kind": "DataQuery",
+                              "spec": {
+                                "editorMode": "code",
+                                "format": "table",
+                                "rawQuery": true,
+                                "rawSql": "SELECT \n  COUNT(*) \nFROM \n  demo.notification_ground_truth\nWHERE \n  insert_timestamp BETWEEN $__timeFrom() AND $__timeTo()",
+                                "sql": {
+                                  "columns": [
+                                    {
+                                      "parameters": [],
+                                      "type": "function"
+                                    }
+                                  ],
+                                  "groupBy": [
+                                    {
+                                      "property": {
+                                        "type": "string"
+                                      },
+                                      "type": "groupBy"
+                                    }
+                                  ],
+                                  "limit": 50
+                                }
+                              },
+                              "version": "v0"
+                            },
+                            "refId": "A"
+                          }
+                        }
+                      ],
+                      "queryOptions": {},
+                      "transformations": []
+                    }
+                  },
+                  "description": "",
+                  "id": 13,
+                  "links": [],
+                  "title": "# Required Notifications",
+                  "vizConfig": {
+                    "group": "stat",
+                    "kind": "VizConfig",
+                    "spec": {
+                      "fieldConfig": {
+                        "defaults": {
+                          "noValue": "0",
+                          "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                              {
+                                "color": "transparent",
+                                "value": 0
+                              }
+                            ]
+                          },
+                          "unit": "short"
+                        },
+                        "overrides": []
+                      },
+                      "options": {
+                        "colorMode": "none",
+                        "graphMode": "none",
+                        "justifyMode": "auto",
+                        "orientation": "auto",
+                        "percentChangeColorMode": "standard",
+                        "reduceOptions": {
+                          "calcs": [
+                            "lastNotNull"
+                          ],
+                          "fields": "",
+                          "values": false
+                        },
+                        "showPercentChange": false,
+                        "textMode": "auto",
+                        "wideLayout": true
+                      }
+                    },
+                    "version": "13.2.1"
+                  }
+                }
+              },
+              "panel-14": {
+                "kind": "Panel",
+                "spec": {
+                  "data": {
+                    "kind": "QueryGroup",
+                    "spec": {
+                      "queries": [
+                        {
+                          "kind": "PanelQuery",
+                          "spec": {
+                            "hidden": false,
+                            "query": {
+                              "datasource": {
+                                "name": "postgres"
+                              },
+                              "group": "grafana-postgresql-datasource",
+                              "kind": "DataQuery",
+                              "spec": {
+                                "editorMode": "code",
+                                "format": "table",
+                                "rawQuery": true,
+                                "rawSql": "WITH\n\tnotified AS (\n\t\tSELECT \n\t\t  experiment_id, measurement_id\n\t\tFROM \n\t\t  demo.notification\n\t\tWHERE\n\t\t  group_id = '${__user.login}'\n  ),\n  ground_truth AS (\n    SELECT \n      experiment_id, measurement_id, insert_timestamp\n    FROM \n      demo.notification_ground_truth\n  )\nSELECT \n  COUNT(*)\nFROM \n  ground_truth gt\nLEFT JOIN\n\tnotified n\nON gt.measurement_id = n.measurement_id AND gt.experiment_id = n.experiment_id\nWHERE \n\tn.measurement_id IS NULL\n\tAND gt.insert_timestamp BETWEEN $__timeFrom() AND $__timeTo() ",
+                                "sql": {
+                                  "columns": [
+                                    {
+                                      "parameters": [],
+                                      "type": "function"
+                                    }
+                                  ],
+                                  "groupBy": [
+                                    {
+                                      "property": {
+                                        "type": "string"
+                                      },
+                                      "type": "groupBy"
+                                    }
+                                  ],
+                                  "limit": 50
+                                }
+                              },
+                              "version": "v0"
+                            },
+                            "refId": "A"
+                          }
+                        }
+                      ],
+                      "queryOptions": {},
+                      "transformations": []
+                    }
+                  },
+                  "description": "",
+                  "id": 14,
+                  "links": [],
+                  "title": "# Notifications Missing",
+                  "vizConfig": {
+                    "group": "stat",
+                    "kind": "VizConfig",
+                    "spec": {
+                      "fieldConfig": {
+                        "defaults": {
+                          "color": {
+                            "mode": "thresholds"
+                          },
+                          "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                              {
+                                "color": "green",
+                                "value": 0
+                              },
+                              {
+                                "color": "red",
+                                "value": 1
+                              }
+                            ]
+                          }
+                        },
+                        "overrides": []
+                      },
+                      "options": {
+                        "colorMode": "value",
+                        "graphMode": "none",
+                        "justifyMode": "auto",
+                        "orientation": "auto",
+                        "percentChangeColorMode": "standard",
+                        "reduceOptions": {
+                          "calcs": [
+                            "lastNotNull"
+                          ],
+                          "fields": "",
+                          "values": false
+                        },
+                        "showPercentChange": false,
+                        "textMode": "auto",
+                        "wideLayout": true
+                      }
+                    },
+                    "version": "13.2.1"
+                  }
+                }
+              },
+              "panel-15": {
+                "kind": "Panel",
+                "spec": {
+                  "data": {
+                    "kind": "QueryGroup",
+                    "spec": {
+                      "queries": [
+                        {
+                          "kind": "PanelQuery",
+                          "spec": {
+                            "hidden": false,
+                            "query": {
+                              "datasource": {
+                                "name": "postgres"
+                              },
+                              "group": "grafana-postgresql-datasource",
+                              "kind": "DataQuery",
+                              "spec": {
+                                "editorMode": "code",
+                                "format": "table",
+                                "rawQuery": true,
+                                "rawSql": "WITH\n\tnotified AS (\n\t\tSELECT \n\t\t  experiment_id, measurement_id, latency\n\t\tFROM \n\t\t  demo.notification\n\t\tWHERE\n\t\t  group_id = '${__user.login}'\n  ),\n  ground_truth AS (\n    SELECT \n      experiment_id, measurement_id, insert_timestamp\n    FROM \n      demo.notification_ground_truth\n  )\nSELECT \n  COUNT(*)\nFROM \n  ground_truth gt\nLEFT JOIN\n\tnotified n\nON gt.measurement_id = n.measurement_id AND gt.experiment_id = n.experiment_id\nWHERE \n\tn.measurement_id IS NOT NULL\n\tAND gt.insert_timestamp BETWEEN $__timeFrom() AND $__timeTo() \n  AND n.latency < 10",
+                                "sql": {
+                                  "columns": [
+                                    {
+                                      "parameters": [],
+                                      "type": "function"
+                                    }
+                                  ],
+                                  "groupBy": [
+                                    {
+                                      "property": {
+                                        "type": "string"
+                                      },
+                                      "type": "groupBy"
+                                    }
+                                  ],
+                                  "limit": 50
+                                }
+                              },
+                              "version": "v0"
+                            },
+                            "refId": "A"
+                          }
+                        }
+                      ],
+                      "queryOptions": {},
+                      "transformations": []
+                    }
+                  },
+                  "description": "",
+                  "id": 15,
+                  "links": [],
+                  "title": "# Notifications < 10s",
+                  "vizConfig": {
+                    "group": "stat",
+                    "kind": "VizConfig",
+                    "spec": {
+                      "fieldConfig": {
+                        "defaults": {
+                          "color": {
+                            "mode": "thresholds"
+                          },
+                          "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                              {
+                                "color": "red",
+                                "value": 0
+                              },
+                              {
+                                "color": "red",
+                                "value": 0
+                              },
+                              {
+                                "color": "green",
+                                "value": 1
+                              }
+                            ]
+                          }
+                        },
+                        "overrides": []
+                      },
+                      "options": {
+                        "colorMode": "value",
+                        "graphMode": "none",
+                        "justifyMode": "auto",
+                        "orientation": "auto",
+                        "percentChangeColorMode": "standard",
+                        "reduceOptions": {
+                          "calcs": [
+                            "lastNotNull"
+                          ],
+                          "fields": "",
+                          "values": false
+                        },
+                        "showPercentChange": false,
+                        "textMode": "auto",
+                        "wideLayout": true
+                      }
+                    },
+                    "version": "13.2.1"
+                  }
+                }
+              },
+              "panel-16": {
+                "kind": "Panel",
+                "spec": {
+                  "data": {
+                    "kind": "QueryGroup",
+                    "spec": {
+                      "queries": [
+                        {
+                          "kind": "PanelQuery",
+                          "spec": {
+                            "hidden": false,
+                            "query": {
+                              "datasource": {
+                                "name": "postgres"
+                              },
+                              "group": "grafana-postgresql-datasource",
+                              "kind": "DataQuery",
+                              "spec": {
+                                "editorMode": "code",
+                                "format": "table",
+                                "rawQuery": true,
+                                "rawSql": "WITH\n\tnotified AS (\n\t\tSELECT \n\t\t  experiment_id, measurement_id, latency\n\t\tFROM \n\t\t  demo.notification\n\t\tWHERE\n\t\t  group_id = '${__user.login}'\n  ),\n  ground_truth AS (\n    SELECT \n      experiment_id, measurement_id, insert_timestamp\n    FROM \n      demo.notification_ground_truth\n  )\nSELECT \n  COUNT(*)\nFROM \n  ground_truth gt\nLEFT JOIN\n\tnotified n\nON gt.measurement_id = n.measurement_id AND gt.experiment_id = n.experiment_id\nWHERE \n\tn.measurement_id IS NOT NULL\n\tAND gt.insert_timestamp BETWEEN $__timeFrom() AND $__timeTo() \n  AND n.latency > 10",
+                                "sql": {
+                                  "columns": [
+                                    {
+                                      "parameters": [],
+                                      "type": "function"
+                                    }
+                                  ],
+                                  "groupBy": [
+                                    {
+                                      "property": {
+                                        "type": "string"
+                                      },
+                                      "type": "groupBy"
+                                    }
+                                  ],
+                                  "limit": 50
+                                }
+                              },
+                              "version": "v0"
+                            },
+                            "refId": "A"
+                          }
+                        }
+                      ],
+                      "queryOptions": {},
+                      "transformations": []
+                    }
+                  },
+                  "description": "",
+                  "id": 16,
+                  "links": [],
+                  "title": "# Notifications > 10s",
+                  "vizConfig": {
+                    "group": "stat",
+                    "kind": "VizConfig",
+                    "spec": {
+                      "fieldConfig": {
+                        "defaults": {
+                          "color": {
+                            "mode": "thresholds"
+                          },
+                          "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                              {
+                                "color": "text",
+                                "value": 0
+                              },
+                              {
+                                "color": "green",
+                                "value": 0
+                              },
+                              {
+                                "color": "red",
+                                "value": 1
+                              }
+                            ]
+                          }
+                        },
+                        "overrides": []
+                      },
+                      "options": {
+                        "colorMode": "value",
+                        "graphMode": "none",
+                        "justifyMode": "auto",
+                        "orientation": "auto",
+                        "percentChangeColorMode": "standard",
+                        "reduceOptions": {
+                          "calcs": [
+                            "lastNotNull"
+                          ],
+                          "fields": "",
+                          "values": false
+                        },
+                        "showPercentChange": false,
+                        "textMode": "auto",
+                        "wideLayout": true
+                      }
+                    },
+                    "version": "13.2.1"
+                  }
+                }
+              },
+              "panel-17": {
+                "kind": "Panel",
+                "spec": {
+                  "data": {
+                    "kind": "QueryGroup",
+                    "spec": {
+                      "queries": [
+                        {
+                          "kind": "PanelQuery",
+                          "spec": {
+                            "hidden": false,
+                            "query": {
+                              "datasource": {
+                                "name": "postgres"
+                              },
+                              "group": "grafana-postgresql-datasource",
+                              "kind": "DataQuery",
+                              "spec": {
+                                "editorMode": "code",
+                                "format": "table",
+                                "rawQuery": true,
+                                "rawSql": "WITH\n\tnotified AS (\n\t\tSELECT \n\t\t  experiment_id, measurement_id, latency\n\t\tFROM \n\t\t  demo.notification\n\t\tWHERE\n\t\t  group_id = '${__user.login}'\n  ),\n  ground_truth AS (\n    SELECT \n      experiment_id, measurement_id, insert_timestamp\n    FROM \n      demo.notification_ground_truth\n  )\nSELECT \n\tCASE \n\t\tWHEN t1.bucket < 10 THEN\n\t\t\t'[' || CAST(t1.bucket AS TEXT) || '; ' || CAST(t1.bucket+1 AS TEXT) || ']'\n\t\tELSE\n\t\t\t'[' || CAST(t1.bucket AS TEXT) || '; ' || '+∞[' \n\tEND AS bucket,\n\tSUM(bucket_count) AS bucket_count\nFROM (\n\tSELECT\n\t\tbucket, COUNT(*) as bucket_count\n\tFROM \n\t\t(\n\t\t\tSELECT\n\t\t\t\twidth_bucket(latency, array[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) as bucket\n\t\t\tFROM \n\t\t\t  ground_truth gt\n\t\t\tLEFT JOIN\n\t\t\t\tnotified n\n\t\t\tON gt.measurement_id = n.measurement_id AND gt.experiment_id = n.experiment_id\n\t\t\tWHERE \n\t\t\t\tn.measurement_id IS NOT NULL\n\t\t\t\tAND gt.insert_timestamp BETWEEN $__timeFrom() AND $__timeTo()\n\t\t) AS buckets\n\tGROUP BY buckets.bucket\n\tUNION ALL \n\tSELECT \n\t\tunnest as bucket, 0 as bucket_count \n\tFROM \n\t\tunnest(array[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])\n) as t1\nGROUP BY bucket\nORDER BY CAST(bucket AS int)\n",
+                                "sql": {
+                                  "columns": [
+                                    {
+                                      "parameters": [],
+                                      "type": "function"
+                                    }
+                                  ],
+                                  "groupBy": [
+                                    {
+                                      "property": {
+                                        "type": "string"
+                                      },
+                                      "type": "groupBy"
+                                    }
+                                  ],
+                                  "limit": 50
+                                }
+                              },
+                              "version": "v0"
+                            },
+                            "refId": "A"
+                          }
+                        }
+                      ],
+                      "queryOptions": {},
+                      "transformations": []
+                    }
+                  },
+                  "description": "",
+                  "id": 17,
+                  "links": [],
+                  "title": "Notification Latency Histogram",
+                  "vizConfig": {
+                    "group": "barchart",
+                    "kind": "VizConfig",
+                    "spec": {
+                      "fieldConfig": {
+                        "defaults": {
+                          "color": {
+                            "mode": "thresholds"
+                          },
+                          "custom": {
+                            "axisBorderShow": false,
+                            "axisCenteredZero": false,
+                            "axisColorMode": "text",
+                            "axisLabel": "",
+                            "axisPlacement": "auto",
+                            "fillOpacity": 49,
+                            "gradientMode": "hue",
+                            "hideFrom": {
+                              "legend": false,
+                              "tooltip": false,
+                              "viz": false
+                            },
+                            "lineWidth": 1,
+                            "scaleDistribution": {
+                              "type": "linear"
+                            },
+                            "thresholdsStyle": {
+                              "mode": "off"
+                            }
+                          },
+                          "mappings": [
+                            {
+                              "options": {
+                                "[10; +∞[": {
+                                  "color": "red",
+                                  "index": 0
+                                }
+                              },
+                              "type": "value"
+                            }
+                          ],
+                          "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                              {
+                                "color": "green",
+                                "value": 0
+                              }
+                            ]
+                          }
+                        },
+                        "overrides": []
+                      },
+                      "options": {
+                        "barRadius": 0.1,
+                        "barWidth": 0.8,
+                        "colorByField": "bucket",
+                        "fullHighlight": false,
+                        "groupWidth": 0.7,
+                        "legend": {
+                          "calcs": [],
+                          "displayMode": "list",
+                          "placement": "bottom",
+                          "showLegend": false
+                        },
+                        "orientation": "auto",
+                        "showValue": "auto",
+                        "stacking": "none",
+                        "tooltip": {
+                          "hideZeros": false,
+                          "mode": "single",
+                          "sort": "none"
+                        },
+                        "xTickLabelRotation": 0,
+                        "xTickLabelSpacing": 0
+                      }
+                    },
+                    "version": "13.2.1"
+                  }
+                }
+              },
+              "panel-19": {
+                "kind": "Panel",
+                "spec": {
+                  "data": {
+                    "kind": "QueryGroup",
+                    "spec": {
+                      "queries": [
+                        {
+                          "kind": "PanelQuery",
+                          "spec": {
+                            "hidden": false,
+                            "query": {
+                              "datasource": {
+                                "name": "prometheus"
+                              },
+                              "group": "prometheus",
+                              "kind": "DataQuery",
+                              "spec": {
+                                "editorMode": "code",
+                                "expr": "(\n  sum(rate(node_cpu_seconds_total{mode!=\"idle\", instance=~\"${__user.login}:.+\", job=\"infrastructure-costs\"}[$__range])) / \n  count(node_cpu_seconds_total{mode=\"idle\", instance=~\"${__user.login}:.+\", job=\"infrastructure-costs\"})\n) * 100 ",
+                                "instant": false,
+                                "legendFormat": "cpu",
+                                "range": true
+                              },
+                              "version": "v0"
+                            },
+                            "refId": "A"
+                          }
+                        }
+                      ],
+                      "queryOptions": {},
+                      "transformations": []
+                    }
+                  },
+                  "description": "",
+                  "id": 19,
+                  "links": [],
+                  "title": "Average CPU Usage",
+                  "vizConfig": {
+                    "group": "timeseries",
+                    "kind": "VizConfig",
+                    "spec": {
+                      "fieldConfig": {
+                        "defaults": {
+                          "color": {
+                            "mode": "continuous-GrYlRd"
+                          },
+                          "custom": {
+                            "axisBorderShow": false,
+                            "axisCenteredZero": false,
+                            "axisColorMode": "text",
+                            "axisLabel": "",
+                            "axisPlacement": "auto",
+                            "axisSoftMax": 100,
+                            "axisSoftMin": 0,
+                            "barAlignment": 0,
+                            "barWidthFactor": 0.6,
+                            "drawStyle": "line",
+                            "fillOpacity": 20,
+                            "gradientMode": "scheme",
+                            "hideFrom": {
+                              "legend": false,
+                              "tooltip": false,
+                              "viz": false
+                            },
+                            "insertNulls": false,
+                            "lineInterpolation": "smooth",
+                            "lineWidth": 3,
+                            "pointSize": 5,
+                            "scaleDistribution": {
+                              "type": "linear"
+                            },
+                            "showPoints": "auto",
+                            "showValues": false,
+                            "spanNulls": false,
+                            "stacking": {
+                              "group": "A",
+                              "mode": "none"
+                            },
+                            "thresholdsStyle": {
+                              "mode": "off"
+                            }
+                          },
+                          "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                              {
+                                "color": "green",
+                                "value": 0
+                              },
+                              {
+                                "color": "red",
+                                "value": 80
+                              }
+                            ]
+                          },
+                          "unit": "percent"
+                        },
+                        "overrides": []
+                      },
+                      "options": {
+                        "legend": {
+                          "calcs": [],
+                          "displayMode": "list",
+                          "placement": "bottom",
+                          "showLegend": true
+                        },
+                        "tooltip": {
+                          "hideZeros": false,
+                          "mode": "single",
+                          "sort": "none"
+                        }
+                      }
+                    },
+                    "version": "13.2.1"
+                  }
+                }
+              },
+              "panel-2": {
+                "kind": "Panel",
+                "spec": {
+                  "data": {
+                    "kind": "QueryGroup",
+                    "spec": {
+                      "queries": [
+                        {
+                          "kind": "PanelQuery",
+                          "spec": {
+                            "hidden": false,
+                            "query": {
+                              "datasource": {
+                                "name": "prometheus"
+                              },
+                              "group": "prometheus",
+                              "kind": "DataQuery",
+                              "spec": {
+                                "editorMode": "code",
+                                "expr": "http_load_generator_target_request_rate{host_name=\"${__user.login}\"}",
+                                "instant": false,
+                                "legendFormat": "target",
+                                "range": true
+                              },
+                              "version": "v0"
+                            },
+                            "refId": "B"
+                          }
+                        },
+                        {
+                          "kind": "PanelQuery",
+                          "spec": {
+                            "hidden": false,
+                            "query": {
+                              "datasource": {
+                                "name": "prometheus"
+                              },
+                              "group": "prometheus",
+                              "kind": "DataQuery",
+                              "spec": {
+                                "editorMode": "code",
+                                "expr": "http_load_generator_effective_request_rate{host_name=\"${__user.login}\"}",
+                                "instant": false,
+                                "legendFormat": "real",
+                                "range": true
+                              },
+                              "version": "v0"
+                            },
+                            "refId": "A"
+                          }
+                        }
+                      ],
+                      "queryOptions": {
+                        "interval": "5s"
+                      },
+                      "transformations": []
+                    }
+                  },
+                  "description": "",
+                  "id": 2,
+                  "links": [],
+                  "title": "HTTP Load",
+                  "vizConfig": {
+                    "group": "timeseries",
+                    "kind": "VizConfig",
+                    "spec": {
+                      "fieldConfig": {
+                        "defaults": {
+                          "color": {
+                            "mode": "palette-classic"
+                          },
+                          "custom": {
+                            "axisBorderShow": false,
+                            "axisCenteredZero": false,
+                            "axisColorMode": "text",
+                            "axisLabel": "",
+                            "axisPlacement": "auto",
+                            "axisSoftMin": 0,
+                            "barAlignment": 0,
+                            "barWidthFactor": 0.6,
+                            "drawStyle": "line",
+                            "fillOpacity": 0,
+                            "gradientMode": "none",
+                            "hideFrom": {
+                              "legend": false,
+                              "tooltip": false,
+                              "viz": false
+                            },
+                            "insertNulls": false,
+                            "lineInterpolation": "linear",
+                            "lineWidth": 1,
+                            "pointSize": 5,
+                            "scaleDistribution": {
+                              "type": "linear"
+                            },
+                            "showPoints": "auto",
+                            "showValues": false,
+                            "spanNulls": false,
+                            "stacking": {
+                              "group": "A",
+                              "mode": "none"
+                            },
+                            "thresholdsStyle": {
+                              "mode": "off"
+                            }
+                          },
+                          "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                              {
+                                "color": "green",
+                                "value": 0
+                              },
+                              {
+                                "color": "red",
+                                "value": 80
+                              }
+                            ]
+                          }
+                        },
+                        "overrides": []
+                      },
+                      "options": {
+                        "legend": {
+                          "calcs": [],
+                          "displayMode": "list",
+                          "placement": "bottom",
+                          "showLegend": true
+                        },
+                        "tooltip": {
+                          "hideZeros": false,
+                          "mode": "single",
+                          "sort": "none"
+                        }
+                      }
+                    },
+                    "version": "13.2.1"
+                  }
+                }
+              },
+              "panel-20": {
+                "kind": "Panel",
+                "spec": {
+                  "data": {
+                    "kind": "QueryGroup",
+                    "spec": {
+                      "queries": [
+                        {
+                          "kind": "PanelQuery",
+                          "spec": {
+                            "hidden": false,
+                            "query": {
+                              "datasource": {
+                                "name": "prometheus"
+                              },
+                              "group": "prometheus",
+                              "kind": "DataQuery",
+                              "spec": {
+                                "editorMode": "code",
+                                "expr": "node_memory_MemTotal_bytes{instance=~\"${__user.login}:.+\", job=\"infrastructure-costs\"} - avg_over_time(node_memory_MemAvailable_bytes{instance=~\"${__user.login}:.+\", job=\"infrastructure-costs\"}[$__range])",
+                                "instant": false,
+                                "legendFormat": "memory",
+                                "range": true
+                              },
+                              "version": "v0"
+                            },
+                            "refId": "A"
+                          }
+                        }
+                      ],
+                      "queryOptions": {},
+                      "transformations": []
+                    }
+                  },
+                  "description": "",
+                  "id": 20,
+                  "links": [],
+                  "title": "Average Memory Used",
+                  "vizConfig": {
+                    "group": "timeseries",
+                    "kind": "VizConfig",
+                    "spec": {
+                      "fieldConfig": {
+                        "defaults": {
+                          "color": {
+                            "mode": "continuous-GrYlRd"
+                          },
+                          "custom": {
+                            "axisBorderShow": false,
+                            "axisCenteredZero": false,
+                            "axisColorMode": "text",
+                            "axisLabel": "",
+                            "axisPlacement": "auto",
+                            "barAlignment": 0,
+                            "barWidthFactor": 0.6,
+                            "drawStyle": "line",
+                            "fillOpacity": 20,
+                            "gradientMode": "scheme",
+                            "hideFrom": {
+                              "legend": false,
+                              "tooltip": false,
+                              "viz": false
+                            },
+                            "insertNulls": false,
+                            "lineInterpolation": "smooth",
+                            "lineWidth": 3,
+                            "pointSize": 5,
+                            "scaleDistribution": {
+                              "type": "linear"
+                            },
+                            "showPoints": "auto",
+                            "showValues": false,
+                            "spanNulls": false,
+                            "stacking": {
+                              "group": "A",
+                              "mode": "none"
+                            },
+                            "thresholdsStyle": {
+                              "mode": "off"
+                            }
+                          },
+                          "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                              {
+                                "color": "green",
+                                "value": 0
+                              },
+                              {
+                                "color": "red",
+                                "value": 80
+                              }
+                            ]
+                          },
+                          "unit": "bytes"
+                        },
+                        "overrides": []
+                      },
+                      "options": {
+                        "legend": {
+                          "calcs": [],
+                          "displayMode": "list",
+                          "placement": "bottom",
+                          "showLegend": true
+                        },
+                        "tooltip": {
+                          "hideZeros": false,
+                          "mode": "single",
+                          "sort": "none"
+                        }
+                      }
+                    },
+                    "version": "13.2.1"
+                  }
+                }
+              },
+              "panel-21": {
+                "kind": "Panel",
+                "spec": {
+                  "data": {
+                    "kind": "QueryGroup",
+                    "spec": {
+                      "queries": [
+                        {
+                          "kind": "PanelQuery",
+                          "spec": {
+                            "hidden": false,
+                            "query": {
+                              "datasource": {
+                                "name": "victorialogs"
+                              },
+                              "group": "prometheus",
+                              "kind": "DataQuery",
+                              "spec": {
+                                "editorMode": "code",
+                                "expr": "group:${__user.login}",
+                                "maxLines": 100,
+                                "queryType": "instant"
+                              },
+                              "version": "v0"
+                            },
+                            "refId": "A"
+                          }
+                        }
+                      ],
+                      "queryOptions": {},
+                      "transformations": []
+                    }
+                  },
+                  "description": "",
+                  "id": 21,
+                  "links": [],
+                  "title": "Logs",
+                  "vizConfig": {
+                    "group": "logs",
+                    "kind": "VizConfig",
+                    "spec": {
+                      "fieldConfig": {
+                        "defaults": {},
+                        "overrides": []
+                      },
+                      "options": {
+                        "dedupStrategy": "exact",
+                        "enableInfiniteScrolling": true,
+                        "enableLogDetails": true,
+                        "prettifyLogMessage": true,
+                        "showControls": false,
+                        "showFieldSelector": false,
+                        "showLevel": true,
+                        "showTime": false,
+                        "sortOrder": "Descending",
+                        "timestampResolution": "ms",
+                        "unwrappedColumns": false,
+                        "wrapLogMessage": false
+                      }
+                    },
+                    "version": "13.2.1"
+                  }
+                }
+              },
+              "panel-3": {
+                "kind": "Panel",
+                "spec": {
+                  "data": {
+                    "kind": "QueryGroup",
+                    "spec": {
+                      "queries": [
+                        {
+                          "kind": "PanelQuery",
+                          "spec": {
+                            "hidden": false,
+                            "query": {
+                              "datasource": {
+                                "name": "prometheus"
+                              },
+                              "group": "prometheus",
+                              "kind": "DataQuery",
+                              "spec": {
+                                "editorMode": "code",
+                                "expr": "round(increase(http_load_generator_response_count_total{host_name=\"${__user.login}\", endpoint=\"/temperature\", response_type!~\"Ok\"}[$__range]))",
+                                "instant": true,
+                                "legendFormat": "{{response_type}}",
+                                "range": false
+                              },
+                              "version": "v0"
+                            },
+                            "refId": "A"
+                          }
+                        }
+                      ],
+                      "queryOptions": {},
+                      "transformations": []
+                    }
+                  },
+                  "description": "",
+                  "id": 3,
+                  "links": [],
+                  "title": "Temperature (Error)",
+                  "vizConfig": {
+                    "group": "stat",
+                    "kind": "VizConfig",
+                    "spec": {
+                      "fieldConfig": {
+                        "defaults": {
+                          "color": {
+                            "mode": "thresholds"
+                          },
+                          "noValue": "0",
+                          "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                              {
+                                "color": "green",
+                                "value": 0
+                              },
+                              {
+                                "color": "red",
+                                "value": 0
+                              }
+                            ]
+                          }
+                        },
+                        "overrides": []
+                      },
+                      "options": {
+                        "colorMode": "value",
+                        "graphMode": "none",
+                        "justifyMode": "auto",
+                        "orientation": "horizontal",
+                        "percentChangeColorMode": "standard",
+                        "reduceOptions": {
+                          "calcs": [
+                            "lastNotNull"
+                          ],
+                          "fields": "",
+                          "values": false
+                        },
+                        "showPercentChange": false,
+                        "textMode": "value_and_name",
+                        "wideLayout": true
+                      }
+                    },
+                    "version": "13.2.1"
+                  }
+                }
+              },
+              "panel-4": {
+                "kind": "Panel",
+                "spec": {
+                  "data": {
+                    "kind": "QueryGroup",
+                    "spec": {
+                      "queries": [
+                        {
+                          "kind": "PanelQuery",
+                          "spec": {
+                            "hidden": false,
+                            "query": {
+                              "datasource": {
+                                "name": "prometheus"
+                              },
+                              "group": "prometheus",
+                              "kind": "DataQuery",
+                              "spec": {
+                                "editorMode": "code",
+                                "expr": "round(increase(http_load_generator_response_count_total{host_name=\"${__user.login}\", endpoint=\"/temperature/out-of-bounds\", response_type=\"Ok\"}[$__range]))",
+                                "instant": false,
+                                "legendFormat": "{{response_type}}",
+                                "range": true
+                              },
+                              "version": "v0"
+                            },
+                            "refId": "A"
+                          }
+                        }
+                      ],
+                      "queryOptions": {},
+                      "transformations": []
+                    }
+                  },
+                  "description": "",
+                  "id": 4,
+                  "links": [],
+                  "title": "OutOfBounds (Ok)",
+                  "vizConfig": {
+                    "group": "stat",
+                    "kind": "VizConfig",
+                    "spec": {
+                      "fieldConfig": {
+                        "defaults": {
+                          "noValue": "0",
+                          "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                              {
+                                "color": "text",
+                                "value": 0
+                              },
+                              {
+                                "color": "green",
+                                "value": 0
+                              }
+                            ]
+                          },
+                          "unit": "short"
+                        },
+                        "overrides": []
+                      },
+                      "options": {
+                        "colorMode": "value",
+                        "graphMode": "none",
+                        "justifyMode": "auto",
+                        "orientation": "auto",
+                        "percentChangeColorMode": "standard",
+                        "reduceOptions": {
+                          "calcs": [
+                            "lastNotNull"
+                          ],
+                          "fields": "",
+                          "values": false
+                        },
+                        "showPercentChange": false,
+                        "textMode": "auto",
+                        "wideLayout": true
+                      }
+                    },
+                    "version": "13.2.1"
+                  }
+                }
+              },
+              "panel-5": {
+                "kind": "Panel",
+                "spec": {
+                  "data": {
+                    "kind": "QueryGroup",
+                    "spec": {
+                      "queries": [
+                        {
+                          "kind": "PanelQuery",
+                          "spec": {
+                            "hidden": false,
+                            "query": {
+                              "datasource": {
+                                "name": "prometheus"
+                              },
+                              "group": "prometheus",
+                              "kind": "DataQuery",
+                              "spec": {
+                                "editorMode": "code",
+                                "expr": "round(increase(http_load_generator_response_count_total{host_name=\"${__user.login}\", endpoint=\"/temperature/out-of-bounds\", response_type!~\"Ok\"}[$__range]))",
+                                "instant": true,
+                                "legendFormat": "{{response_type}}",
+                                "range": false
+                              },
+                              "version": "v0"
+                            },
+                            "refId": "A"
+                          }
+                        }
+                      ],
+                      "queryOptions": {},
+                      "transformations": []
+                    }
+                  },
+                  "description": "",
+                  "id": 5,
+                  "links": [],
+                  "title": "OutOfBounds (Error)",
+                  "vizConfig": {
+                    "group": "stat",
+                    "kind": "VizConfig",
+                    "spec": {
+                      "fieldConfig": {
+                        "defaults": {
+                          "color": {
+                            "mode": "thresholds"
+                          },
+                          "noValue": "0",
+                          "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                              {
+                                "color": "green",
+                                "value": 0
+                              },
+                              {
+                                "color": "red",
+                                "value": 0
+                              }
+                            ]
+                          }
+                        },
+                        "overrides": []
+                      },
+                      "options": {
+                        "colorMode": "value",
+                        "graphMode": "none",
+                        "justifyMode": "auto",
+                        "orientation": "horizontal",
+                        "percentChangeColorMode": "standard",
+                        "reduceOptions": {
+                          "calcs": [
+                            "lastNotNull"
+                          ],
+                          "fields": "",
+                          "values": false
+                        },
+                        "showPercentChange": false,
+                        "textMode": "value_and_name",
+                        "wideLayout": true
+                      }
+                    },
+                    "version": "13.2.1"
+                  }
+                }
+              },
+              "panel-6": {
+                "kind": "Panel",
+                "spec": {
+                  "data": {
+                    "kind": "QueryGroup",
+                    "spec": {
+                      "queries": [
+                        {
+                          "kind": "PanelQuery",
+                          "spec": {
+                            "hidden": false,
+                            "query": {
+                              "datasource": {
+                                "name": "prometheus"
+                              },
+                              "group": "prometheus",
+                              "kind": "DataQuery",
+                              "spec": {
+                                "editorMode": "code",
+                                "expr": "round(increase(http_load_generator_response_count_total{host_name=\"${__user.login}\", endpoint=\"/temperature\", response_type=\"Ok\"}[$__range]))",
+                                "instant": false,
+                                "legendFormat": "{{response_type}}",
+                                "range": true
+                              },
+                              "version": "v0"
+                            },
+                            "refId": "A"
+                          }
+                        }
+                      ],
+                      "queryOptions": {},
+                      "transformations": []
+                    }
+                  },
+                  "description": "",
+                  "id": 6,
+                  "links": [],
+                  "title": "Temperature (Ok)",
+                  "vizConfig": {
+                    "group": "stat",
+                    "kind": "VizConfig",
+                    "spec": {
+                      "fieldConfig": {
+                        "defaults": {
+                          "noValue": "0",
+                          "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                              {
+                                "color": "text",
+                                "value": 0
+                              },
+                              {
+                                "color": "green",
+                                "value": 0
+                              }
+                            ]
+                          },
+                          "unit": "short"
+                        },
+                        "overrides": []
+                      },
+                      "options": {
+                        "colorMode": "value",
+                        "graphMode": "none",
+                        "justifyMode": "auto",
+                        "orientation": "auto",
+                        "percentChangeColorMode": "standard",
+                        "reduceOptions": {
+                          "calcs": [
+                            "lastNotNull"
+                          ],
+                          "fields": "",
+                          "values": false
+                        },
+                        "showPercentChange": false,
+                        "textMode": "auto",
+                        "wideLayout": true
+                      }
+                    },
+                    "version": "13.2.1"
+                  }
+                }
+              },
+              "panel-8": {
+                "kind": "Panel",
+                "spec": {
+                  "data": {
+                    "kind": "QueryGroup",
+                    "spec": {
+                      "queries": [
+                        {
+                          "kind": "PanelQuery",
+                          "spec": {
+                            "hidden": false,
+                            "query": {
+                              "datasource": {
+                                "name": "prometheus"
+                              },
+                              "group": "prometheus",
+                              "kind": "DataQuery",
+                              "spec": {
+                                "editorMode": "code",
+                                "expr": "round(increase(notifications_service_response_count_total{group=\"${__user.login}\", response_type!~\"Ok\"}[$__range]))",
+                                "instant": true,
+                                "legendFormat": "{{response_type}}",
+                                "range": false
+                              },
+                              "version": "v0"
+                            },
+                            "refId": "A"
+                          }
+                        }
+                      ],
+                      "queryOptions": {},
+                      "transformations": []
+                    }
+                  },
+                  "description": "",
+                  "id": 8,
+                  "links": [],
+                  "title": "Notification Endpoint (Error)",
+                  "vizConfig": {
+                    "group": "stat",
+                    "kind": "VizConfig",
+                    "spec": {
+                      "fieldConfig": {
+                        "defaults": {
+                          "color": {
+                            "mode": "thresholds"
+                          },
+                          "noValue": "0",
+                          "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                              {
+                                "color": "green",
+                                "value": 0
+                              },
+                              {
+                                "color": "red",
+                                "value": 1
+                              }
+                            ]
+                          }
+                        },
+                        "overrides": []
+                      },
+                      "options": {
+                        "colorMode": "value",
+                        "graphMode": "none",
+                        "justifyMode": "auto",
+                        "orientation": "horizontal",
+                        "percentChangeColorMode": "standard",
+                        "reduceOptions": {
+                          "calcs": [
+                            "lastNotNull"
+                          ],
+                          "fields": "",
+                          "values": false
+                        },
+                        "showPercentChange": false,
+                        "textMode": "value_and_name",
+                        "wideLayout": true
+                      }
+                    },
+                    "version": "13.2.1"
+                  }
+                }
+              },
+              "panel-9": {
+                "kind": "Panel",
+                "spec": {
+                  "data": {
+                    "kind": "QueryGroup",
+                    "spec": {
+                      "queries": [
+                        {
+                          "kind": "PanelQuery",
+                          "spec": {
+                            "hidden": false,
+                            "query": {
+                              "datasource": {
+                                "name": "prometheus"
+                              },
+                              "group": "prometheus",
+                              "kind": "DataQuery",
+                              "spec": {
+                                "editorMode": "code",
+                                "expr": "sum(round(increase(http_load_generator_response_rtt_histogram_bucket{host_name=\"${__user.login}\"}[$__range]))) by (le)",
+                                "format": "heatmap",
+                                "instant": false,
+                                "legendFormat": "{{le}}",
+                                "range": true
+                              },
+                              "version": "v0"
+                            },
+                            "refId": "A"
+                          }
+                        }
+                      ],
+                      "queryOptions": {},
+                      "transformations": []
+                    }
+                  },
+                  "description": "",
+                  "id": 9,
+                  "links": [],
+                  "title": "Response Time Histogram",
+                  "vizConfig": {
+                    "group": "bargauge",
+                    "kind": "VizConfig",
+                    "spec": {
+                      "fieldConfig": {
+                        "defaults": {
+                          "color": {
+                            "mode": "thresholds"
+                          },
+                          "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                              {
+                                "color": "green",
+                                "value": 0
+                              },
+                              {
+                                "color": "red",
+                                "value": 80
+                              }
+                            ]
+                          }
+                        },
+                        "overrides": []
+                      },
+                      "options": {
+                        "displayMode": "gradient",
+                        "legend": {
+                          "calcs": [],
+                          "displayMode": "list",
+                          "placement": "bottom",
+                          "showLegend": false
+                        },
+                        "maxVizHeight": 300,
+                        "minVizHeight": 10,
+                        "minVizWidth": 0,
+                        "namePlacement": "auto",
+                        "orientation": "auto",
+                        "reduceOptions": {
+                          "calcs": [
+                            "lastNotNull"
+                          ],
+                          "fields": "",
+                          "values": false
+                        },
+                        "showUnfilled": true,
+                        "sizing": "auto",
+                        "valueMode": "text"
+                      }
+                    },
+                    "version": "13.2.1"
+                  }
+                }
+              }
+            },
+            "layout": {
+              "kind": "RowsLayout",
+              "spec": {
+                "rows": [
+                  {
+                    "kind": "RowsLayoutRow",
+                    "spec": {
+                      "collapse": false,
+                      "layout": {
+                        "kind": "GridLayout",
+                        "spec": {
+                          "items": [
+                            {
+                              "kind": "GridLayoutItem",
+                              "spec": {
+                                "element": {
+                                  "kind": "ElementReference",
+                                  "name": "panel-1"
+                                },
+                                "height": 8,
+                                "width": 12,
+                                "x": 0,
+                                "y": 0
+                              }
+                            },
+                            {
+                              "kind": "GridLayoutItem",
+                              "spec": {
+                                "element": {
+                                  "kind": "ElementReference",
+                                  "name": "panel-2"
+                                },
+                                "height": 8,
+                                "width": 12,
+                                "x": 12,
+                                "y": 0
+                              }
+                            }
+                          ]
                         }
                       },
-                      "type": "value"
-                    }
-                  ],
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "color": "green",
-                        "value": null
-                      }
-                    ]
-                  }
-                },
-                "overrides": []
-              },
-              "gridPos": {
-                "h": 10,
-                "w": 12,
-                "x": 12,
-                "y": 10
-              },
-              "id": 17,
-              "options": {
-                "barRadius": 0.1,
-                "barWidth": 0.8,
-                "colorByField": "bucket",
-                "fullHighlight": false,
-                "groupWidth": 0.7,
-                "legend": {
-                  "calcs": [],
-                  "displayMode": "list",
-                  "placement": "bottom",
-                  "showLegend": false
-                },
-                "orientation": "auto",
-                "showValue": "auto",
-                "stacking": "none",
-                "tooltip": {
-                  "mode": "single",
-                  "sort": "none"
-                },
-                "xTickLabelRotation": 0,
-                "xTickLabelSpacing": 0
-              },
-              "pluginVersion": "10.1.2",
-              "targets": [
-                {
-                  "datasource": {
-                    "type": "grafana-postgresql-datasource",
-                    "uid": "postgres"
-                  },
-                  "editorMode": "code",
-                  "format": "table",
-                  "rawQuery": true,
-                  "rawSql": "WITH\n\tnotified AS (\n\t\tSELECT \n\t\t  experiment_id, measurement_id, latency\n\t\tFROM \n\t\t  demo.notification\n\t\tWHERE\n\t\t  group_id = '${__user.login}'\n  ),\n  ground_truth AS (\n    SELECT \n      experiment_id, measurement_id, insert_timestamp\n    FROM \n      demo.notification_ground_truth\n  )\nSELECT \n\tCASE \n\t\tWHEN t1.bucket < 10 THEN\n\t\t\t'[' || CAST(t1.bucket AS TEXT) || '; ' || CAST(t1.bucket+1 AS TEXT) || ']'\n\t\tELSE\n\t\t\t'[' || CAST(t1.bucket AS TEXT) || '; ' || '+∞[' \n\tEND AS bucket,\n\tSUM(bucket_count) AS bucket_count\nFROM (\n\tSELECT\n\t\tbucket, COUNT(*) as bucket_count\n\tFROM \n\t\t(\n\t\t\tSELECT\n\t\t\t\twidth_bucket(latency, array[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) as bucket\n\t\t\tFROM \n\t\t\t  ground_truth gt\n\t\t\tLEFT JOIN\n\t\t\t\tnotified n\n\t\t\tON gt.measurement_id = n.measurement_id AND gt.experiment_id = n.experiment_id\n\t\t\tWHERE \n\t\t\t\tn.measurement_id IS NOT NULL\n\t\t\t\tAND gt.insert_timestamp BETWEEN $__timeFrom() AND $__timeTo()\n\t\t) AS buckets\n\tGROUP BY buckets.bucket\n\tUNION ALL \n\tSELECT \n\t\tunnest as bucket, 0 as bucket_count \n\tFROM \n\t\tunnest(array[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])\n) as t1\nGROUP BY bucket\nORDER BY CAST(bucket AS int)\n",
-                  "refId": "A",
-                  "sql": {
-                    "columns": [
-                      {
-                        "parameters": [],
-                        "type": "function"
-                      }
-                    ],
-                    "groupBy": [
-                      {
-                        "property": {
-                          "type": "string"
-                        },
-                        "type": "groupBy"
-                      }
-                    ],
-                    "limit": 50
-                  }
-                }
-              ],
-              "title": "Notification Latency Histogram",
-              "type": "barchart"
-            },
-            {
-              "datasource": {
-                "type": "grafana-postgresql-datasource",
-                "uid": "postgres"
-              },
-              "fieldConfig": {
-                "defaults": {
-                  "color": {
-                    "mode": "thresholds"
-                  },
-                  "mappings": [],
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "color": "red",
-                        "value": null
-                      },
-                      {
-                        "color": "red",
-                        "value": 0
-                      },
-                      {
-                        "color": "green",
-                        "value": 1
-                      }
-                    ]
-                  }
-                },
-                "overrides": []
-              },
-              "gridPos": {
-                "h": 5,
-                "w": 3,
-                "x": 5,
-                "y": 15
-              },
-              "id": 15,
-              "options": {
-                "colorMode": "value",
-                "graphMode": "none",
-                "justifyMode": "auto",
-                "orientation": "auto",
-                "percentChangeColorMode": "standard",
-                "reduceOptions": {
-                  "calcs": [
-                    "lastNotNull"
-                  ],
-                  "fields": "",
-                  "values": false
-                },
-                "showPercentChange": false,
-                "textMode": "auto",
-                "wideLayout": true
-              },
-              "pluginVersion": "11.2.0",
-              "targets": [
-                {
-                  "datasource": {
-                    "type": "grafana-postgresql-datasource",
-                    "uid": "postgres"
-                  },
-                  "editorMode": "code",
-                  "format": "table",
-                  "rawQuery": true,
-                  "rawSql": "WITH\n\tnotified AS (\n\t\tSELECT \n\t\t  experiment_id, measurement_id, latency\n\t\tFROM \n\t\t  demo.notification\n\t\tWHERE\n\t\t  group_id = '${__user.login}'\n  ),\n  ground_truth AS (\n    SELECT \n      experiment_id, measurement_id, insert_timestamp\n    FROM \n      demo.notification_ground_truth\n  )\nSELECT \n  COUNT(*)\nFROM \n  ground_truth gt\nLEFT JOIN\n\tnotified n\nON gt.measurement_id = n.measurement_id AND gt.experiment_id = n.experiment_id\nWHERE \n\tn.measurement_id IS NOT NULL\n\tAND gt.insert_timestamp BETWEEN $__timeFrom() AND $__timeTo() \n  AND n.latency < 10",
-                  "refId": "A",
-                  "sql": {
-                    "columns": [
-                      {
-                        "parameters": [],
-                        "type": "function"
-                      }
-                    ],
-                    "groupBy": [
-                      {
-                        "property": {
-                          "type": "string"
-                        },
-                        "type": "groupBy"
-                      }
-                    ],
-                    "limit": 50
-                  }
-                }
-              ],
-              "title": "# Notifications < 10s",
-              "type": "stat"
-            },
-            {
-              "datasource": {
-                "type": "grafana-postgresql-datasource",
-                "uid": "postgres"
-              },
-              "fieldConfig": {
-                "defaults": {
-                  "color": {
-                    "mode": "thresholds"
-                  },
-                  "mappings": [],
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "color": "text",
-                        "value": null
-                      },
-                      {
-                        "color": "green",
-                        "value": 0
-                      },
-                      {
-                        "color": "red",
-                        "value": 1
-                      }
-                    ]
-                  }
-                },
-                "overrides": []
-              },
-              "gridPos": {
-                "h": 5,
-                "w": 3,
-                "x": 8,
-                "y": 15
-              },
-              "id": 16,
-              "options": {
-                "colorMode": "value",
-                "graphMode": "none",
-                "justifyMode": "auto",
-                "orientation": "auto",
-                "percentChangeColorMode": "standard",
-                "reduceOptions": {
-                  "calcs": [
-                    "lastNotNull"
-                  ],
-                  "fields": "",
-                  "values": false
-                },
-                "showPercentChange": false,
-                "textMode": "auto",
-                "wideLayout": true
-              },
-              "pluginVersion": "11.2.0",
-              "targets": [
-                {
-                  "datasource": {
-                    "type": "grafana-postgresql-datasource",
-                    "uid": "postgres"
-                  },
-                  "editorMode": "code",
-                  "format": "table",
-                  "rawQuery": true,
-                  "rawSql": "WITH\n\tnotified AS (\n\t\tSELECT \n\t\t  experiment_id, measurement_id, latency\n\t\tFROM \n\t\t  demo.notification\n\t\tWHERE\n\t\t  group_id = '${__user.login}'\n  ),\n  ground_truth AS (\n    SELECT \n      experiment_id, measurement_id, insert_timestamp\n    FROM \n      demo.notification_ground_truth\n  )\nSELECT \n  COUNT(*)\nFROM \n  ground_truth gt\nLEFT JOIN\n\tnotified n\nON gt.measurement_id = n.measurement_id AND gt.experiment_id = n.experiment_id\nWHERE \n\tn.measurement_id IS NOT NULL\n\tAND gt.insert_timestamp BETWEEN $__timeFrom() AND $__timeTo() \n  AND n.latency > 10",
-                  "refId": "A",
-                  "sql": {
-                    "columns": [
-                      {
-                        "parameters": [],
-                        "type": "function"
-                      }
-                    ],
-                    "groupBy": [
-                      {
-                        "property": {
-                          "type": "string"
-                        },
-                        "type": "groupBy"
-                      }
-                    ],
-                    "limit": 50
-                  }
-                }
-              ],
-              "title": "# Notifications > 10s",
-              "type": "stat"
-            },
-            {
-              "collapsed": false,
-              "gridPos": {
-                "h": 1,
-                "w": 24,
-                "x": 0,
-                "y": 20
-              },
-              "id": 10,
-              "panels": [],
-              "title": "REST statistics",
-              "type": "row"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "fieldConfig": {
-                "defaults": {
-                  "mappings": [],
-                  "noValue": "0",
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "color": "text",
-                        "value": null
-                      },
-                      {
-                        "color": "green",
-                        "value": 0
-                      }
-                    ]
-                  },
-                  "unit": "short"
-                },
-                "overrides": []
-              },
-              "gridPos": {
-                "h": 5,
-                "w": 4,
-                "x": 0,
-                "y": 21
-              },
-              "id": 6,
-              "options": {
-                "colorMode": "value",
-                "graphMode": "none",
-                "justifyMode": "auto",
-                "orientation": "auto",
-                "percentChangeColorMode": "standard",
-                "reduceOptions": {
-                  "calcs": [
-                    "lastNotNull"
-                  ],
-                  "fields": "",
-                  "values": false
-                },
-                "showPercentChange": false,
-                "textMode": "auto",
-                "wideLayout": true
-              },
-              "pluginVersion": "11.2.0",
-              "targets": [
-                {
-                  "datasource": {
-                    "type": "prometheus",
-                    "uid": "prometheus"
-                  },
-                  "editorMode": "code",
-                  "expr": "round(increase(http_load_generator_response_count_total{host_name=\"${__user.login}\", endpoint=\"/temperature\", response_type=\"Ok\"}[$__range]))",
-                  "instant": false,
-                  "legendFormat": "{{response_type}}",
-                  "range": true,
-                  "refId": "A"
-                }
-              ],
-              "title": "Temperature (Ok)",
-              "type": "stat"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "fieldConfig": {
-                "defaults": {
-                  "mappings": [],
-                  "noValue": "0",
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "color": "text",
-                        "value": null
-                      },
-                      {
-                        "color": "green",
-                        "value": 0
-                      }
-                    ]
-                  },
-                  "unit": "short"
-                },
-                "overrides": []
-              },
-              "gridPos": {
-                "h": 5,
-                "w": 4,
-                "x": 6,
-                "y": 21
-              },
-              "id": 4,
-              "options": {
-                "colorMode": "value",
-                "graphMode": "none",
-                "justifyMode": "auto",
-                "orientation": "auto",
-                "percentChangeColorMode": "standard",
-                "reduceOptions": {
-                  "calcs": [
-                    "lastNotNull"
-                  ],
-                  "fields": "",
-                  "values": false
-                },
-                "showPercentChange": false,
-                "textMode": "auto",
-                "wideLayout": true
-              },
-              "pluginVersion": "11.2.0",
-              "targets": [
-                {
-                  "datasource": {
-                    "type": "prometheus",
-                    "uid": "prometheus"
-                  },
-                  "editorMode": "code",
-                  "expr": "round(increase(http_load_generator_response_count_total{host_name=\"${__user.login}\", endpoint=\"/temperature/out-of-bounds\", response_type=\"Ok\"}[$__range]))",
-                  "instant": false,
-                  "legendFormat": "{{response_type}}",
-                  "range": true,
-                  "refId": "A"
-                }
-              ],
-              "title": "OutOfBounds (Ok)",
-              "type": "stat"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "fieldConfig": {
-                "defaults": {
-                  "color": {
-                    "mode": "thresholds"
-                  },
-                  "mappings": [],
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "color": "green",
-                        "value": null
-                      },
-                      {
-                        "color": "red",
-                        "value": 80
-                      }
-                    ]
-                  }
-                },
-                "overrides": []
-              },
-              "gridPos": {
-                "h": 13,
-                "w": 12,
-                "x": 12,
-                "y": 21
-              },
-              "id": 9,
-              "options": {
-                "displayMode": "gradient",
-                "maxVizHeight": 300,
-                "minVizHeight": 10,
-                "minVizWidth": 0,
-                "namePlacement": "auto",
-                "orientation": "auto",
-                "reduceOptions": {
-                  "calcs": [
-                    "lastNotNull"
-                  ],
-                  "fields": "",
-                  "values": false
-                },
-                "showUnfilled": true,
-                "sizing": "auto",
-                "valueMode": "text"
-              },
-              "pluginVersion": "11.2.0",
-              "targets": [
-                {
-                  "datasource": {
-                    "type": "prometheus",
-                    "uid": "prometheus"
-                  },
-                  "editorMode": "code",
-                  "expr": "sum(round(increase(http_load_generator_response_rtt_histogram_bucket{host_name=\"${__user.login}\"}[$__range]))) by (le)",
-                  "format": "heatmap",
-                  "instant": false,
-                  "legendFormat": "{{le}}",
-                  "range": true,
-                  "refId": "A"
-                }
-              ],
-              "title": "Response Time Histogram",
-              "type": "bargauge"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "fieldConfig": {
-                "defaults": {
-                  "color": {
-                    "mode": "thresholds"
-                  },
-                  "mappings": [],
-                  "noValue": "0",
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "color": "green"
-                      },
-                      {
-                        "color": "red",
-                        "value": 0
-                      }
-                    ]
-                  }
-                },
-                "overrides": []
-              },
-              "gridPos": {
-                "h": 8,
-                "w": 4,
-                "x": 0,
-                "y": 26
-              },
-              "id": 3,
-              "options": {
-                "colorMode": "value",
-                "graphMode": "none",
-                "justifyMode": "auto",
-                "orientation": "horizontal",
-                "percentChangeColorMode": "standard",
-                "reduceOptions": {
-                  "calcs": [
-                    "lastNotNull"
-                  ],
-                  "fields": "",
-                  "values": false
-                },
-                "showPercentChange": false,
-                "textMode": "value_and_name",
-                "wideLayout": true
-              },
-              "pluginVersion": "11.2.0",
-              "targets": [
-                {
-                  "datasource": {
-                    "type": "prometheus",
-                    "uid": "prometheus"
-                  },
-                  "editorMode": "code",
-                  "expr": "round(increase(http_load_generator_response_count_total{host_name=\"${__user.login}\", endpoint=\"/temperature\", response_type!~\"Ok\"}[$__range]))",
-                  "instant": true,
-                  "legendFormat": "{{response_type}}",
-                  "range": false,
-                  "refId": "A"
-                }
-              ],
-              "title": "Temperature (Error)",
-              "type": "stat"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "fieldConfig": {
-                "defaults": {
-                  "color": {
-                    "mode": "thresholds"
-                  },
-                  "mappings": [],
-                  "noValue": "0",
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "color": "green"
-                      },
-                      {
-                        "color": "red",
-                        "value": 0
-                      }
-                    ]
-                  }
-                },
-                "overrides": []
-              },
-              "gridPos": {
-                "h": 8,
-                "w": 4,
-                "x": 6,
-                "y": 26
-              },
-              "id": 5,
-              "options": {
-                "colorMode": "value",
-                "graphMode": "none",
-                "justifyMode": "auto",
-                "orientation": "horizontal",
-                "percentChangeColorMode": "standard",
-                "reduceOptions": {
-                  "calcs": [
-                    "lastNotNull"
-                  ],
-                  "fields": "",
-                  "values": false
-                },
-                "showPercentChange": false,
-                "textMode": "value_and_name",
-                "wideLayout": true
-              },
-              "pluginVersion": "11.2.0",
-              "targets": [
-                {
-                  "datasource": {
-                    "type": "prometheus",
-                    "uid": "prometheus"
-                  },
-                  "editorMode": "code",
-                  "expr": "round(increase(http_load_generator_response_count_total{host_name=\"${__user.login}\", endpoint=\"/temperature/out-of-bounds\", response_type!~\"Ok\"}[$__range]))",
-                  "instant": true,
-                  "legendFormat": "{{response_type}}",
-                  "range": false,
-                  "refId": "A"
-                }
-              ],
-              "title": "OutOfBounds (Error)",
-              "type": "stat"
-            },
-            {
-              "collapsed": false,
-              "gridPos": {
-                "h": 1,
-                "w": 24,
-                "x": 0,
-                "y": 34
-              },
-              "id": 18,
-              "panels": [],
-              "title": "Infrastructure Cost",
-              "type": "row"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "fieldConfig": {
-                "defaults": {
-                  "color": {
-                    "mode": "continuous-GrYlRd"
-                  },
-                  "custom": {
-                    "axisBorderShow": false,
-                    "axisCenteredZero": false,
-                    "axisColorMode": "text",
-                    "axisLabel": "",
-                    "axisPlacement": "auto",
-                    "axisSoftMax": 100,
-                    "axisSoftMin": 0,
-                    "barAlignment": 0,
-                    "barWidthFactor": 0.6,
-                    "drawStyle": "line",
-                    "fillOpacity": 20,
-                    "gradientMode": "scheme",
-                    "hideFrom": {
-                      "legend": false,
-                      "tooltip": false,
-                      "viz": false
-                    },
-                    "insertNulls": false,
-                    "lineInterpolation": "smooth",
-                    "lineWidth": 3,
-                    "pointSize": 5,
-                    "scaleDistribution": {
-                      "type": "linear"
-                    },
-                    "showPoints": "auto",
-                    "spanNulls": false,
-                    "stacking": {
-                      "group": "A",
-                      "mode": "none"
-                    },
-                    "thresholdsStyle": {
-                      "mode": "off"
+                      "title": "System Load"
                     }
                   },
-                  "mappings": [],
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "color": "green"
+                  {
+                    "kind": "RowsLayoutRow",
+                    "spec": {
+                      "collapse": false,
+                      "layout": {
+                        "kind": "GridLayout",
+                        "spec": {
+                          "items": [
+                            {
+                              "kind": "GridLayoutItem",
+                              "spec": {
+                                "element": {
+                                  "kind": "ElementReference",
+                                  "name": "panel-8"
+                                },
+                                "height": 10,
+                                "width": 4,
+                                "x": 0,
+                                "y": 0
+                              }
+                            },
+                            {
+                              "kind": "GridLayoutItem",
+                              "spec": {
+                                "element": {
+                                  "kind": "ElementReference",
+                                  "name": "panel-13"
+                                },
+                                "height": 5,
+                                "width": 3,
+                                "x": 5,
+                                "y": 0
+                              }
+                            },
+                            {
+                              "kind": "GridLayoutItem",
+                              "spec": {
+                                "element": {
+                                  "kind": "ElementReference",
+                                  "name": "panel-14"
+                                },
+                                "height": 5,
+                                "width": 3,
+                                "x": 8,
+                                "y": 0
+                              }
+                            },
+                            {
+                              "kind": "GridLayoutItem",
+                              "spec": {
+                                "element": {
+                                  "kind": "ElementReference",
+                                  "name": "panel-17"
+                                },
+                                "height": 10,
+                                "width": 12,
+                                "x": 12,
+                                "y": 0
+                              }
+                            },
+                            {
+                              "kind": "GridLayoutItem",
+                              "spec": {
+                                "element": {
+                                  "kind": "ElementReference",
+                                  "name": "panel-15"
+                                },
+                                "height": 5,
+                                "width": 3,
+                                "x": 5,
+                                "y": 5
+                              }
+                            },
+                            {
+                              "kind": "GridLayoutItem",
+                              "spec": {
+                                "element": {
+                                  "kind": "ElementReference",
+                                  "name": "panel-16"
+                                },
+                                "height": 5,
+                                "width": 3,
+                                "x": 8,
+                                "y": 5
+                              }
+                            }
+                          ]
+                        }
                       },
-                      {
-                        "color": "red",
-                        "value": 80
-                      }
-                    ]
-                  },
-                  "unit": "percent"
-                },
-                "overrides": []
-              },
-              "gridPos": {
-                "h": 8,
-                "w": 12,
-                "x": 0,
-                "y": 35
-              },
-              "id": 19,
-              "options": {
-                "legend": {
-                  "calcs": [],
-                  "displayMode": "list",
-                  "placement": "bottom",
-                  "showLegend": true
-                },
-                "tooltip": {
-                  "mode": "single",
-                  "sort": "none"
-                }
-              },
-              "targets": [
-                {
-                  "datasource": {
-                    "type": "prometheus",
-                    "uid": "prometheus"
-                  },
-                  "editorMode": "code",
-                  "expr": "(\n  sum(rate(node_cpu_seconds_total{mode!=\"idle\", instance=~\"${__user.login}:.+\", job=\"infrastructure-costs\"}[$__range])) / \n  count(node_cpu_seconds_total{mode=\"idle\", instance=~\"${__user.login}:.+\", job=\"infrastructure-costs\"})\n) * 100 ",
-                  "instant": false,
-                  "legendFormat": "cpu",
-                  "range": true,
-                  "refId": "A"
-                }
-              ],
-              "title": "Average CPU Usage",
-              "type": "timeseries"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "fieldConfig": {
-                "defaults": {
-                  "color": {
-                    "mode": "continuous-GrYlRd"
-                  },
-                  "custom": {
-                    "axisBorderShow": false,
-                    "axisCenteredZero": false,
-                    "axisColorMode": "text",
-                    "axisLabel": "",
-                    "axisPlacement": "auto",
-                    "barAlignment": 0,
-                    "barWidthFactor": 0.6,
-                    "drawStyle": "line",
-                    "fillOpacity": 20,
-                    "gradientMode": "scheme",
-                    "hideFrom": {
-                      "legend": false,
-                      "tooltip": false,
-                      "viz": false
-                    },
-                    "insertNulls": false,
-                    "lineInterpolation": "smooth",
-                    "lineWidth": 3,
-                    "pointSize": 5,
-                    "scaleDistribution": {
-                      "type": "linear"
-                    },
-                    "showPoints": "auto",
-                    "spanNulls": false,
-                    "stacking": {
-                      "group": "A",
-                      "mode": "none"
-                    },
-                    "thresholdsStyle": {
-                      "mode": "off"
+                      "title": "Notification Statistics"
                     }
                   },
-                  "mappings": [],
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "color": "green"
+                  {
+                    "kind": "RowsLayoutRow",
+                    "spec": {
+                      "collapse": false,
+                      "layout": {
+                        "kind": "GridLayout",
+                        "spec": {
+                          "items": [
+                            {
+                              "kind": "GridLayoutItem",
+                              "spec": {
+                                "element": {
+                                  "kind": "ElementReference",
+                                  "name": "panel-6"
+                                },
+                                "height": 5,
+                                "width": 4,
+                                "x": 0,
+                                "y": 0
+                              }
+                            },
+                            {
+                              "kind": "GridLayoutItem",
+                              "spec": {
+                                "element": {
+                                  "kind": "ElementReference",
+                                  "name": "panel-4"
+                                },
+                                "height": 5,
+                                "width": 4,
+                                "x": 6,
+                                "y": 0
+                              }
+                            },
+                            {
+                              "kind": "GridLayoutItem",
+                              "spec": {
+                                "element": {
+                                  "kind": "ElementReference",
+                                  "name": "panel-9"
+                                },
+                                "height": 13,
+                                "width": 12,
+                                "x": 12,
+                                "y": 0
+                              }
+                            },
+                            {
+                              "kind": "GridLayoutItem",
+                              "spec": {
+                                "element": {
+                                  "kind": "ElementReference",
+                                  "name": "panel-3"
+                                },
+                                "height": 8,
+                                "width": 4,
+                                "x": 0,
+                                "y": 5
+                              }
+                            },
+                            {
+                              "kind": "GridLayoutItem",
+                              "spec": {
+                                "element": {
+                                  "kind": "ElementReference",
+                                  "name": "panel-5"
+                                },
+                                "height": 8,
+                                "width": 4,
+                                "x": 6,
+                                "y": 5
+                              }
+                            },
+                            {
+                              "kind": "GridLayoutItem",
+                              "spec": {
+                                "element": {
+                                  "kind": "ElementReference",
+                                  "name": "panel-21"
+                                },
+                                "height": 8,
+                                "width": 24,
+                                "x": 0,
+                                "y": 13
+                              }
+                            }
+                          ]
+                        }
                       },
-                      {
-                        "color": "red",
-                        "value": 80
-                      }
-                    ]
+                      "title": "REST statistics"
+                    }
                   },
-                  "unit": "bytes"
-                },
-                "overrides": []
-              },
-              "gridPos": {
-                "h": 8,
-                "w": 12,
-                "x": 12,
-                "y": 35
-              },
-              "id": 20,
-              "options": {
-                "legend": {
-                  "calcs": [],
-                  "displayMode": "list",
-                  "placement": "bottom",
-                  "showLegend": true
-                },
-                "tooltip": {
-                  "mode": "single",
-                  "sort": "none"
-                }
-              },
-              "targets": [
-                {
-                  "datasource": {
-                    "type": "prometheus",
-                    "uid": "prometheus"
-                  },
-                  "editorMode": "code",
-                  "expr": "node_memory_MemTotal_bytes{instance=~\"${__user.login}:.+\", job=\"infrastructure-costs\"} - avg_over_time(node_memory_MemAvailable_bytes{instance=~\"${__user.login}:.+\", job=\"infrastructure-costs\"}[$__range])",
-                  "instant": false,
-                  "legendFormat": "memory",
-                  "range": true,
-                  "refId": "A"
-                }
+                  {
+                    "kind": "RowsLayoutRow",
+                    "spec": {
+                      "collapse": false,
+                      "layout": {
+                        "kind": "GridLayout",
+                        "spec": {
+                          "items": [
+                            {
+                              "kind": "GridLayoutItem",
+                              "spec": {
+                                "element": {
+                                  "kind": "ElementReference",
+                                  "name": "panel-19"
+                                },
+                                "height": 8,
+                                "width": 12,
+                                "x": 0,
+                                "y": 0
+                              }
+                            },
+                            {
+                              "kind": "GridLayoutItem",
+                              "spec": {
+                                "element": {
+                                  "kind": "ElementReference",
+                                  "name": "panel-20"
+                                },
+                                "height": 8,
+                                "width": 12,
+                                "x": 12,
+                                "y": 0
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "title": "Infrastructure Cost"
+                    }
+                  }
+                ]
+              }
+            },
+            "links": [],
+            "liveNow": false,
+            "preload": false,
+            "tags": [],
+            "timeSettings": {
+              "autoRefresh": "15s",
+              "autoRefreshIntervals": [
+                "5s",
+                "10s",
+                "30s",
+                "1m",
+                "5m",
+                "15m",
+                "30m",
+                "1h",
+                "2h",
+                "1d"
               ],
-              "title": "Average Memory Used",
-              "type": "timeseries"
-            }
-          ],
-          "refresh": "15s",
-          "schemaVersion": 39,
-          "tags": [],
-          "templating": {
-            "list": []
-          },
-          "time": {
-            "from": "now-15m",
-            "to": "now"
-          },
-          "timepicker": {},
-          "timezone": "",
-          "title": "Group Personal View",
-          "uid": "d496b29e-14e1-4ec7-b6ae-9b078ba12345",
-          "version": 4,
-          "weekStart": ""
+              "fiscalYearStartMonth": 0,
+              "from": "now-15m",
+              "hideTimepicker": false,
+              "timezone": "browser",
+              "to": "now"
+            },
+            "title": "Group Personal View",
+            "variables": []
+          }
         }
