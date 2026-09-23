@@ -140,7 +140,13 @@ in
     services.certmgr.specs.kubeletClient.request.hosts = [];
     services.certmgr.specs.addonManager.request.hosts = [];
 
-    networking.firewall.allowedTCPPorts = [ 6443 8888 ];
+    networking.firewall.allowedTCPPorts = [ 
+        6443 
+        8888 
+
+        10250 # cadvisor
+        9100 # node-exporter
+    ];
 
     # virtualisation.containerd.settings.plugins."io.containerd.grpc.v1.cri".registry = {
     #     mirrors = {

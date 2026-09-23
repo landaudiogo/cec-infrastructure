@@ -46,17 +46,18 @@
     services.certmgr.specs.kubeletClient.request.hosts = [];
 
     networking.firewall.allowedTCPPorts = [ 
-        10250 
-
         19003
         19002
         19001
 
         80 
         443 
-        19092
-        29092
-        39092
+        19092 # kafka-1
+        29092 # kafka-2
+        39092 # kafka-3
+
+        10250 # cadvisor
+        9100 # node-exporter
     ];
 
     # virtualisation.containerd.settings.plugins."io.containerd.grpc.v1.cri".registry = {
