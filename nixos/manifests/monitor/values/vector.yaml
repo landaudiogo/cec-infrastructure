@@ -18,33 +18,30 @@ customConfig:
       inputs:
         - k8s_logs
       source: |
-        parsed, err = parse_regex(
-          .message,
-          r'^\[(?P<timestamp>[^\]]+)\s+(?P<level>[A-Z]+)'
-        )
-
-        if err == null {
-          .timestamp = parsed.timestamp
-          .level = parsed.level
-        }
+        .message = strip_ansi_escape_codes(.message) ?? .message
 
         parsed, err = parse_regex(
           .message,
-          r'(?P<group>group[0-9]+)'
+          r'^(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?[+-]\d{2}(?::?\d{2})?)\s+(?P<level>[A-Z]+)\s+http-generator\{host="(?P<group>[^"]+)"\}:\s+(?P<message>.*)$'
         )
 
-        if err == null {
-          .group = parsed.group
+        if err != null {
+          log("failed to parse: " + err, level: "warn")
+          abort
         }
 
-        # Remove everything except the fields we want
+        ts, ts_err = parse_timestamp(parsed.timestamp, format: "%Y-%m-%dT%H:%M:%S%.f%#z")
+        if ts_err != null {
+          log("failed to parse timestamp: " + ts_err, level: "warn")
+          abort
+        }
+
         . = {
-          "timestamp": .timestamp,
-          "level": .level,
-          "group": .group,
-          "message": .message
+          "timestamp": ts,
+          "level": parsed.level,
+          "group": parsed.group,
+          "message": parsed.message
         }
-
   sinks:
     # console:
     #   type: console

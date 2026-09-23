@@ -197,7 +197,7 @@ spec:
           readOnly: true
   containers:
     - name: http-load-generator
-      image: dclandau/cec-http-load-generator:f2941da
+      image: dclandau/cec-http-load-generator:eb9ffa6
       args:
         - --brokers
         - "kafka-1:9094,kafka-2:9094,kafka-3:9094"
