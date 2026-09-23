@@ -21,7 +21,6 @@ alertmanager:
   enabled: false
 
 grafana:
-  operator: true
   enabled: true
   service:
     type: NodePort
