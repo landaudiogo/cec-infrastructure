@@ -104,6 +104,8 @@ spec:
           value: "EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093,INTERNAL://0.0.0.0:9094"
         - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
           value: "CONTROLLER:SSL,INTERNAL:SSL,EXTERNAL:SSL"
+        - name: KAFKA_LOG_RETENTION_BYTES
+          value: "524288000"
         - name: KAFKA_LOG_RETENTION_MS
           value: "3600000"
         - name: KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS
