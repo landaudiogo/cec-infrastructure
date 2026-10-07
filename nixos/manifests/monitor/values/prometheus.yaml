@@ -25,8 +25,10 @@ grafana:
   service:
     type: NodePort
     nodePort: 30007
-  adminUser: admin
-  adminPassword: admin-password
+  admin:
+    existingSecret: "grafana"
+    userKey: "admin-user"
+    passwordKey: "admin-password"
 
 kubelet:
   serviceMonitor:

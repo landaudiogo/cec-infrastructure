@@ -82,6 +82,7 @@ in
     age.secrets.database-init.file = ../secrets/database-init.json.age;
     age.secrets.external-services.file = ../secrets/external-services.yaml.age;
     age.secrets.grafana.file = ../secrets/grafana.json.age;
+    age.secrets."grafana.monitoring".file = ../secrets/grafana.monitoring.json.age;
     systemd.services.kube-addon-manager.preStart = ''
         ${pkgs.kubectl}/bin/kubectl apply \
             -f ${config.age.secrets.k8s-creds-key.path} \
@@ -96,6 +97,7 @@ in
             -f ${config.age.secrets.database-init.path} \
             -f ${config.age.secrets.external-services.path} \
             -f ${config.age.secrets.grafana.path} \
+            -f ${config.age.secrets."grafana.monitoring".path} \
             -f ${config.age.secrets.k8s-creds-backend.path}
     '';
 

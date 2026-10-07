@@ -36,6 +36,7 @@ in
     "database-init.json.age".publicKeys = [ landaudiogo k8s-master ];
     "external-services.yaml.age".publicKeys = [ landaudiogo k8s-master ];
     "grafana.json.age".publicKeys = [ landaudiogo k8s-master ];
+    "grafana.monitoring.json.age".publicKeys = [ landaudiogo k8s-master ];
 
     "students.json.age".publicKeys = [ landaudiogo ];
     "groups.json.age".publicKeys = [ landaudiogo ];
