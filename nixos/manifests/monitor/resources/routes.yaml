@@ -1,0 +1,58 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: monitoring-redirect
+spec:
+  parentRefs:
+    - name: eg
+      namespace: default
+      sectionName: http
+  hostnames:
+    - "monitoring.cec.dlandau.nl"
+  rules:
+    # Let ACME HTTP-01 challenges through untouched
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /.well-known/acme-challenge/
+      backendRefs:
+        - group: ""
+          kind: Service
+          namespace: monitoring
+          name: monitoring-grafana
+          port: 80
+    # Redirect everything else to HTTPS
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            statusCode: 301
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: monitoring
+spec:
+  parentRefs:
+    - name: eg
+      namespace: default
+      sectionName: https.monitoring.cec.dlandau.nl
+  hostnames:
+    - "monitoring.cec.dlandau.nl"
+  rules:
+    - backendRefs:
+        - group: ""
+          kind: Service
+          namespace: monitoring
+          name: monitoring-grafana
+          port: 80
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /

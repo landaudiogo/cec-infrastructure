@@ -21,7 +21,6 @@ helmCharts:
     namespace: monitoring
     valuesFile: ./values/victoria-logs.yaml
     
-
-
 resources:
   - ./resources/namespace.yaml
+  - ./resources/routes.yaml

@@ -22,6 +22,9 @@ spec:
     - name: http
       protocol: HTTP
       port: 80
+      allowedRoutes:
+        namespaces:
+          from: All
     - name: https.creds.cec.dlandau.nl
       protocol: HTTPS
       hostname: creds.cec.dlandau.nl
@@ -58,6 +61,21 @@ spec:
         certificateRefs:
         - kind: Secret
           name: notifications.cec.dlandau.nl
+    - name: https.monitoring.cec.dlandau.nl
+      protocol: HTTPS
+      hostname: monitoring.cec.dlandau.nl
+      port: 443
+      allowedRoutes:
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      tls:
+        mode: Terminate
+        certificateRefs:
+        - kind: Secret
+          name: monitoring.cec.dlandau.nl
     - name: kafka1-ssl
       protocol: TCP
       port: 19092
