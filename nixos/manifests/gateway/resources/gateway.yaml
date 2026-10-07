@@ -25,6 +25,9 @@ spec:
       allowedRoutes:
         namespaces:
           from: All
+    - name: metrics
+      protocol: HTTP
+      port: 19001
     - name: https.creds.cec.dlandau.nl
       protocol: HTTPS
       hostname: creds.cec.dlandau.nl
