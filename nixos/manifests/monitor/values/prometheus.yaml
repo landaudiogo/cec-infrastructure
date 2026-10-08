@@ -34,3 +34,9 @@ kubelet:
   serviceMonitor:
     interval: 15s
     cAdvisorMetricRelabelings: null
+
+prometheus-node-exporter:
+  livenessProbe:
+    periodSeconds: 30
+  readinessProbe:
+    periodSeconds: 30
