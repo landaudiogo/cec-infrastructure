@@ -72,8 +72,13 @@ data:
           - 'group12:3008'
           - 'group13:3008'
           - 'group14:3008'
+          - 'group15:3008'
+          - 'group16:3008'
+          - 'group17:3008'
+          - 'group18:3008'
+          - 'group19:3008'
+          - 'group20:3008'
           - 'landau:3008'
-        
 ---
 apiVersion: v1
 kind: Service
