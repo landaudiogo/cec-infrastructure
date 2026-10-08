@@ -25,3 +25,4 @@ resources:
   - ./resources/namespace.yaml
   - ./resources/routes.yaml
   - ./resources/envoy.yaml
+  # - ./resources/postgres.yaml

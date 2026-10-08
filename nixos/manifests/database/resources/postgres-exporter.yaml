@@ -1,0 +1,40 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: postgres-exporter
+  labels:
+    app: postgres-exporter
+spec:
+  restartPolicy: Always
+  containers:
+  - image: quay.io/prometheuscommunity/postgres-exporter
+    name: postgres-exporter
+    ports:
+    - name: metrics
+      containerPort: 9187
+    env:
+    - name: DATA_SOURCE_USER
+      value: cec
+    - name: DATA_SOURCE_PASS
+      valueFrom:
+        secretKeyRef:
+          name: database
+          key: POSTGRES_PASSWORD
+    - name: DATA_SOURCE_URI
+      value: "postgres:5432/cec?sslmode=disable"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-exporter
+  labels:
+    app: postgres-exporter
+spec:
+  type: ClusterIP
+  selector: 
+    app: postgres-exporter
+  ports:
+    - port: 9187
+      targetPort: metrics
+      name: metrics
