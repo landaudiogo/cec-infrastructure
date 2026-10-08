@@ -1,37 +1,15 @@
-# prometheus:
-#   image: prom/prometheus
-#   volumes:
-#     - ./prometheus-config.yml:/etc/prometheus/prometheus.yml
-#     - prometheus-data:/prometheus
-#   ports: 
-#     - 3005:9090
-#   command: 
-#     - "--config.file=/etc/prometheus/prometheus.yml"
-#     - "--storage.tsdb.path=/prometheus"
-#     - "--web.console.libraries=/usr/share/prometheus/console_libraries"
-#     - "--web.console.templates=/usr/share/prometheus/consoles"
-#     - "--storage.tsdb.retention.time=2y"
-#   extra_hosts: 
-#     - host.docker.internal:host-gateway
-#     - experiment-producer-host:${EXPERIMENT_PRODUCER_HOST}
-#     - notifications-service-host:${NOTIFICATIONS_SERVICE_HOST}
-#     - http-load-generator-host:${HTTP_LOAD_GENERATOR_HOST}
-#     - group0:${GROUP0_HOST}
-#     - group1:${GROUP1_HOST}
-#     - group2:${GROUP2_HOST}
-#     - group3:${GROUP3_HOST}
-#     - group4:${GROUP4_HOST}
-#     - group5:${GROUP5_HOST}
-#     - group6:${GROUP6_HOST}
-#     - group7:${GROUP7_HOST}
-#     - group8:${GROUP8_HOST}
-#     - group9:${GROUP9_HOST}
-#     - group10:${GROUP10_HOST}
-#     - group11:${GROUP11_HOST}
-#     - group12:${GROUP12_HOST}
-#     - group13:${GROUP13_HOST}
-#     - group14:${GROUP14_HOST}
-#     - landau:${LANDAU_HOST}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: prometheus-pvc
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -44,6 +22,11 @@ data:
       scrape_timeout: 10s
 
     scrape_configs:
+      - job_name: grafana
+        scrape_interval: 15s
+        metrics_path: /metrics
+        static_configs:
+        - targets: ['dashboard-grafana:80']
 
       - job_name: notifications-service
         scrape_interval: 1s
@@ -124,7 +107,12 @@ spec:
           mountPath: /etc/prometheus/prometheus.yaml
           subPath: prometheus.yaml
           readOnly: true
+        - name: data
+          mountPath: /prometheus
   volumes:
     - name: prometheus-config
       configMap:
         name: prometheus-config
+    - name: data
+      persistentVolumeClaim:
+        claimName: prometheus-pvc
