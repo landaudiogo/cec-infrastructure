@@ -93,7 +93,7 @@ spec:
         requests:
           cpu: 100m
           memory: 100Mi
-      image: dclandau/cec-experiment-producer:6682dc9
+      image: dclandau/cec-experiment-producer:1d97806
       args:
         - "--brokers"
         - "kafka-1:9094,kafka-2:9094,kafka-3:9094"
