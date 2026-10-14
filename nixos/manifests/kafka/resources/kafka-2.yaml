@@ -121,7 +121,7 @@ spec:
         - name: KAFKA_LOG_RETENTION_MS
           value: "3600000"
         - name: KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS
-          value: "300000"
+          value: "10000"
         - name: KAFKA_SUPER_USERS
           value: "User:landau;User:kafka-1;User:kafka-2;User:kafka-3"
         - name: KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS
