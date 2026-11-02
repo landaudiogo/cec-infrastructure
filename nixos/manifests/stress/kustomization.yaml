@@ -5,7 +5,8 @@ helmGlobals:
  chartHome: ../helm-charts
 
 helmCharts:
-  - name: http-load-generator releaseName: http-load-generator
+  - name: http-load-generator
+    releaseName: http-load-generator
     namespace: default
     valuesFile: values/http-load-generator.yaml
 
